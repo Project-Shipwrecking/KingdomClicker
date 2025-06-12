@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Resources" load_steps=2 format=3 uid="uid://cyioc6clths7m"]
+
+[ext_resource type="Script" uid="uid://b4nmktuc47sd0" path="res://Assets/Resources/resources.gd" id="1_xt61v"]
+
+[resource]
+script = ExtResource("1_xt61v")
+name = "Stone"
+probability = 1.0
+atlas_coord = Vector2i(6, 2)
+metadata/_custom_type_script = "uid://b4nmktuc47sd0"

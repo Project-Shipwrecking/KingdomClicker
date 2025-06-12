@@ -1,5 +1,6 @@
 extends Node2D
 
+@onready var test = $Test
 @export_range(1, 10) var sigma : float = 3.5 # smaller sigma means bigger island
 @export var map_tile : TileMapLayer
 @export var resource_tile : TileMapLayer
@@ -11,6 +12,7 @@ func _ready():
 
 
 func gen_map(width : int, height : int) -> void:
+	var biome_man = BiomeManager.new()
 	var scale_vec = Vector2(width, height)
 	var noise = _gen_noise(width, height)
 	for x in range(width):
@@ -21,9 +23,17 @@ func gen_map(width : int, height : int) -> void:
 			if _gaussian(dist, sigma) * (1 + noise.get_noise_2d(x, y)/4) > 0.4:
 				#TODO Scale sigma and noise according to scale
 				tile_id = Global.TILE_ID["LAND"]
-				if randf() > .3:
-					resource_tile.set_cell(Vector2i(x-int(width/2.),y-int(height/2.)), 0, Global.TILE_ID["RESOURCE"])
-					# resource_tile above map_tile visually
+				# Pick random distribution of resource according to biome
+				#var resource_to_spawn = biome_man.spawn_resource_in_biome(\
+						#BiomeManager.BiomeName.FOREST)
+				#resource_to_spawn.print_string()
+				if randf() > 0.3:
+					var resource_to_spawn = test.get_res()
+					resource_tile.set_cell(Vector2i(x-int(width/2.),y-int(height/2.)), 0, resource_to_spawn.atlas_coord)
+				
+				#if randf() > .3:
+					#resource_tile.set_cell(Vector2i(x-int(width/2.),y-int(height/2.)), 0, Global.TILE_ID["RESOURCE"])
+					## resource_tile above map_tile visually
 					
 			map_tile.set_cell(Vector2i(x-int(width/2.), y-int(height/2.)), 0, tile_id)
 
