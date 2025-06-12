@@ -1,6 +1,6 @@
 extends Node2D
 
-@export_range(1, 10) var sigma : float = 3.5 # smaller sigma means bigger island
+@export_range(0,20) var sigma : float = 13
 var map : Array[Array] = []
 
 func _ready():
@@ -12,16 +12,15 @@ func _draw():
 	map_visualize()
 
 func gen_map(width : int, height : int) -> void:
-	var scale = Vector2(width, height)
-	var noise = _gen_noise(width, height)
 	for x in range(width):
 		map.append([])
 		for y in range(height):
 			var tile_type = Global.TILE_TYPE.SEA
-			var dist = (Vector2(x,y)/scale).distance_to(Vector2(.5,.5))
-			if _gaussian(dist, sigma) * (1 + noise.get_noise_2d(x, y)/4) > 0.4:
-				#TODO Scale sigma and noise according to scale
+			print(_gaussian((Vector2(x/width,y/height)).distance_to(Vector2(.5,.5)), sigma))
+			if _gaussian(Vector2(x/width,y/height).distance_to(Vector2(.5,.5)), sigma) > .3:
 				tile_type = Global.TILE_TYPE.LAND
+				if randf() > 0.3:
+					tile_type = Global.TILE_TYPE.RESOURCE
 			
 			#var tile_type = Global.TILE_TYPE.LAND
 			#if x == 0 or x == width - 1 or y == 0 or y == height - 1:
@@ -30,20 +29,19 @@ func gen_map(width : int, height : int) -> void:
 				#tile_type = Global.TILE_TYPE.RESOURCE
 			map[x].append(tile_type)
 
-func _gaussian(dist: float, sig: float) -> float:
-	return exp(-pow(dist, 2) / 2 * pow(sig, 2))
-	
-func _gen_noise(width: float, height: float) -> FastNoiseLite:
+func _gen_noise() -> FastNoiseLite:
 	var noise = FastNoiseLite.new()
-	noise.seed = randi()
+	noise.fractal_type = FastNoiseLite.FRACTAL_FBM
 	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
-	noise.fractal_type = FastNoiseLite.FRACTAL_NONE
-	noise.fractal_octaves = 3
-	noise.frequency = 0.08
-	#noise.offset = Vector3(width/2, height/2, 0)
-	#noise.fractal_gain
-	#noise.fractal_lacunarity
+	
+	noise.fractal_octaves = 1
+	noise.fractal_gain = .5
+	noise.fractal_lacunarity = 1
 	return noise
+	
+
+func _gaussian(x: float, sigma: float) -> float:
+	return exp(-pow(x, 2) / (2.0 * pow(sigma, 2)))
 
 func map_visualize() -> void:
 	for x in range(len(map)):
@@ -56,3 +54,16 @@ func map_visualize() -> void:
 				tile_color = Color(1, 1, 0)  # Yellow for resource
 			
 			draw_rect(Rect2(x*5, y*5, 5, 5), tile_color, true)
+			
+			# var rect = RectangleShape2D.new()
+			# rect.extents = Vector2(16, 16)
+			# var collision_shape = CollisionShape2D.new()
+			# collision_shape.shape = rect
+			
+			# var sprite = Sprite2D.new()
+			# sprite.texture = preload("res://Assets/icon.svg")  # Replace with your texture path
+			# sprite.position = Vector2(x * 16, y * 16)
+			# sprite.modulate = tile_color
+			
+			# add_child(sprite)
+			# add_child(collision_shape)
