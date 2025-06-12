@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://niy2ekfys0hb"
-path="res://.godot/imported/godotwaka.png-ef0518417b4f997d237759e5551dd05d.ctex"
+uid="uid://b13ysg7h8gsy3"
+path="res://.godot/imported/platformPack_tilesheet@2.png-6f64de09652f5fc4dd62d5cf1667c57b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/godotwaka.png"
-dest_files=["res://.godot/imported/godotwaka.png-ef0518417b4f997d237759e5551dd05d.ctex"]
+source_file="res://Assets/kenney_simplified-platformer-pack/platformPack_tilesheet@2.png"
+dest_files=["res://.godot/imported/platformPack_tilesheet@2.png-6f64de09652f5fc4dd62d5cf1667c57b.ctex"]
 
 [params]
 

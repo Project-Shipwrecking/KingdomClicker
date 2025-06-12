@@ -1,0 +1,10 @@
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://cdbvvkd0gkdsr"]
+
+[ext_resource type="Texture2D" uid="uid://cdq1qu8pulixn" path="res://Assets/kenney_simplified-platformer-pack/platformPack_tilesheet.png" id="1_r8axl"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3bdoh"]
+texture = ExtResource("1_r8axl")
+texture_region_size = Vector2i(64, 64)
+
+[resource]
+sources/0 = SubResource("TileSetAtlasSource_3bdoh")
