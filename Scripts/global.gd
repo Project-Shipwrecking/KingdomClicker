@@ -7,7 +7,7 @@ enum TILE_TYPE {
 	RESOURCE,
 } 
 var TILE_ID = {
-	"SEA": Vector2i(6,0),
+	"SEA": Vector2i(4,1),
 	"LAND": Vector2i(6,1),
 	"RESOURCE": Vector2i(8,2),
 } # Made to match the MapTile tileset
