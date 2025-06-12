@@ -1,9 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://dhan6hfycmk67"]
+[gd_scene load_steps=4 format=3 uid="uid://dhan6hfycmk67"]
 
+[ext_resource type="Script" uid="uid://cf7ph77e28wrs" path="res://Scenes/test.gd" id="1_8gbba"]
 [ext_resource type="Script" uid="uid://dusjgdyy7xnv0" path="res://Scripts/camera.gd" id="1_jjgbg"]
 [ext_resource type="PackedScene" uid="uid://dhd21pir7fbsh" path="res://Scenes/map_manager.tscn" id="2_bo1nx"]
 
 [node name="Main" type="Node2D"]
+script = ExtResource("1_8gbba")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position_smoothing_speed = 100.0
