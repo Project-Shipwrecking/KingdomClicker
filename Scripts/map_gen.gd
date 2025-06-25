@@ -28,10 +28,19 @@ func gen_map(width : int, height : int) -> void:
 			var dist = (Vector2(x,y)/scale_vec).distance_to(Vector2(.5,.5))
 			if _gaussian(dist, sigma) * (1 + noise.get_noise_2d(x, y)/4) > 0.4:
 				#TODO Scale sigma and noise according to scale
+				# SIGMA
 				tile_id = Global.TILE_ID["LAND"]
 				# Pick random distribution of resource according to biome
-				var resource_to_spawn = biome_man.spawn_resource_in_biome(\
-						BiomeManager.BiomeName.FOREST)
+				# Determine biome based on noise or another clustering method
+				var biome_noise = noise.get_noise_2d(x + 1000, y + 1000) # Offset to get different pattern
+				var biome_type : BiomeManager.BiomeName
+				if biome_noise < -0.3:
+					biome_type = BiomeManager.BiomeName.DESERT
+				elif biome_noise < 0.3:
+					biome_type = BiomeManager.BiomeName.FOREST
+				else:
+					biome_type = BiomeManager.BiomeName.PLAINS
+				var resource_to_spawn = biome_man.spawn_resource_in_biome(biome_type)
 				#print_debug(resource_to_spawn)
 				if randf() > 0.3:
 					resource_tile.set_cell(Vector2i(x-int(width/2.),y-int(height/2.)), 0, resource_to_spawn.atlas_coord)

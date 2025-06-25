@@ -14,15 +14,15 @@ var biomes = [
 	{
 		'sand': {
 			'probability': 0.6,
-			'atlas_coord': Vector2i(6, 2)
+			'atlas_coord': Vector2i(1, 0)
 			},
 		'salt': {
 			'probability': 0.1,
-			'atlas_coord': Vector2i(6, 2)
+			'atlas_coord': Vector2i(2, 0)
 		},
 		'cactus': {
 			'probability': 0.1,
-			'atlas_coord': Vector2i(6, 2)
+			'atlas_coord': Vector2i(2, 5)
 		}
 	},
 	{
@@ -32,17 +32,17 @@ var biomes = [
 		},
 		'berries': {
 			'probability': 0.1,
-			'atlas_coord': Vector2i(6, 2)
+			'atlas_coord': Vector2i(10, 2)
 		},
 		'stones': {
 			'probability': 0.1,
-			'atlas_coord': Vector2i(6, 2)
+			'atlas_coord': Vector2i(3, 1)
 		}
 	},
 	{
 		'grass': {
 			'probability': 0.6,
-			'atlas_coord': Vector2i(6, 2)
+			'atlas_coord': Vector2i(0, 0)
 		},
 		'flowers': {
 			'probability': 0.1,
