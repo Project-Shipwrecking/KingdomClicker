@@ -21,4 +21,3 @@ func _zoom_update(mult: float) -> void:
 	zoom_index *= mult
 	zoom_index = clamp(zoom_index, 0.2, 5)
 	zoom = Vector2(zoom_index, zoom_index)
-
