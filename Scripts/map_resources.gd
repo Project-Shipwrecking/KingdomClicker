@@ -1,4 +1,4 @@
-class_name resource_class
+class_name map_resources
 extends Node
 
 # General Biomes: Desert, Forest, Plains
