@@ -8,41 +8,68 @@ enum BiomeName {
 }
 
 var biomes = [
-	[
-		preload("res://Assets/Resources/sand.tres"),
-	],
-	#{
-		#'sand': 0.6,
-		#'salt': 0.1,
-		#'cactus': 0.1,
-	#},
-	[
-		preload("res://Assets/Resources/wood.tres"),
-		preload("res://Assets/Resources/stone.tres"),
-	],
-	#{
-		#'tree': 0.6,
-		#'berries': 0.1,
-		#'stones': 0.1
-	#},
-	[
-		preload("res://Assets/Resources/wheat.tres"),
-	]
-	#{
-		#'grass': 0.6,
-		#'flowers': 0.1,
-		#'wheat': 0.1
-	#}
+	# [
+	# 	preload("res://Assets/Resources/sand.tres"),
+	# ],
+	{
+		'sand': {
+			'probability': 0.6,
+			'atlas_coord': Vector2i(6, 2)
+			},
+		'salt': {
+			'probability': 0.1,
+			'atlas_coord': Vector2i(6, 2)
+		},
+		'cactus': {
+			'probability': 0.1,
+			'atlas_coord': Vector2i(6, 2)
+		}
+	},
+	{
+		'tree': {
+			'probability': 0.6,
+			'atlas_coord': Vector2i(6, 2)
+		},
+		'berries': {
+			'probability': 0.1,
+			'atlas_coord': Vector2i(6, 2)
+		},
+		'stones': {
+			'probability': 0.1,
+			'atlas_coord': Vector2i(6, 2)
+		}
+	},
+	{
+		'grass': {
+			'probability': 0.6,
+			'atlas_coord': Vector2i(6, 2)
+		},
+		'flowers': {
+			'probability': 0.1,
+			'atlas_coord': Vector2i(6, 2)
+		},
+		'wheat': {
+			'probability': 0.1,
+			'atlas_coord': Vector2i(6, 2)
+		}
+	}
 ]
 
 func get_resources_for_biome(biome_index: int) -> Array:
 	var typed_resources: Array[Resources]= []
-	for res in biomes[biome_index]:
-		typed_resources.append(res)
-		print_debug(res is Resources)
-		print(res, " is Resources: ", res is Resources)
-		print(res, " is Resource: ", res is Resource)
-		print(res.get_script())
+	for res_name in biomes[biome_index].keys():
+		var res_data = biomes[biome_index][res_name]
+		var resToPush = Resources.new()
+		resToPush.name = res_name
+		resToPush.probability = res_data.probability
+		resToPush.atlas_coord = res_data.atlas_coord
+		typed_resources.append(resToPush)
+		
+		#typed_resources.append(res)
+		#print_debug(res is Resources)
+		#print(res, " is Resources: ", res is Resources)
+		#print(res, " is Resource: ", res is Resource)
+		#print(res.get_script())
 	print_debug(typed_resources)
 	return typed_resources
 
