@@ -1,4 +1,14 @@
-[gd_scene load_steps=5 format=3 uid="uid://dhd21pir7fbsh"]
+
+[gd_scene load_steps=7 format=3 uid="uid://dhd21pir7fbsh"]
+
+[ext_resource type="Script" uid="uid://cnoy0dssyl8i" path="res://Scripts/test.gd" id="3_kclx8"]
+[ext_resource type="StyleBox" uid="uid://84mse2t7ucsu" path="res://new_style_box_line.tres" id="4_tfb6w"]
+[ext_resource type="FontFile" uid="uid://biuan0c6ywcce" path="res://Assets/UI Pack/Font/Kenney Future Narrow.ttf" id="5_5l8ip"]
+
+[sub_resource type="Theme" id="Theme_p57ns"]
+default_base_scale = 0.23
+default_font = ExtResource("5_5l8ip")
+/styles/water = ExtResource("4_tfb6w")
 
 [ext_resource type="Script" uid="uid://bjq6l2c8ly6ub" path="res://Scripts/map_gen.gd" id="1_6rskp"]
 [ext_resource type="TileSet" uid="uid://cdbvvkd0gkdsr" path="res://Assets/tile_sheet.tres" id="2_y5xe8"]
@@ -19,6 +29,15 @@ tile_set = ExtResource("2_y5xe8")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
+[node name="PopupPanel" type="PopupPanel" parent="CanvasLayer"]
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/PopupPanel"]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 96.0
+offset_bottom = 96.0
+theme = SubResource("Theme_p57ns")
+theme_override_colors/table_border = Color(0.623529, 0.580392, 0.788235, 1)
 [node name="InfoBox" type="Panel" parent="CanvasLayer"]
 visible = false
 custom_minimum_size = Vector2(175, 180)
