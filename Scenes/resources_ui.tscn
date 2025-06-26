@@ -1,0 +1,139 @@
+[gd_scene load_steps=5 format=3 uid="uid://brn0ak5w6cu0o"]
+
+[ext_resource type="Theme" uid="uid://6shp5ck1tnja" path="res://Assets/FlatUI4/kenneyUI.tres" id="1_yuoa8"]
+[ext_resource type="Texture2D" uid="uid://2sortuxm24ud" path="res://Assets/UI Pack/PNG/Grey/Default/button_square_flat.png" id="2_7mg63"]
+[ext_resource type="Script" uid="uid://ckot0xb6nj0y7" path="res://Scripts/resources_ui.gd" id="2_iuxoj"]
+[ext_resource type="Texture2D" uid="uid://ocqr4kaowgws" path="res://Assets/icon.svg" id="3_iuxoj"]
+
+[node name="ResourcesUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -864.0
+offset_bottom = -486.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2, 2)
+theme = ExtResource("1_yuoa8")
+script = ExtResource("2_iuxoj")
+
+[node name="Panel" type="Panel" parent="."]
+visible = false
+layout_mode = 0
+offset_right = 366.0
+offset_bottom = 59.0
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+layout_mode = 0
+offset_right = 498.0
+offset_bottom = 70.0
+theme = ExtResource("1_yuoa8")
+texture = ExtResource("2_7mg63")
+region_rect = Rect2(0, 0, 64, 64)
+patch_margin_left = 5
+patch_margin_top = 5
+patch_margin_right = 5
+patch_margin_bottom = 5
+
+[node name="MarginContainer" type="MarginContainer" parent="NinePatchRect"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = -7.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="NinePatchRect/MarginContainer"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="NinePatchRect/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[color=black]Resources"
+vertical_alignment = 1
+
+[node name="ResourceContainer" type="VBoxContainer" parent="NinePatchRect/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="NinePatchRect/MarginContainer/HBoxContainer/ResourceContainer"]
+layout_mode = 2
+texture = ExtResource("3_iuxoj")
+expand_mode = 4
+
+[node name="RichTextLabel" type="RichTextLabel" parent="NinePatchRect/MarginContainer/HBoxContainer/ResourceContainer"]
+layout_mode = 2
+bbcode_enabled = true
+text = "[color=black][font_size=12]2"
+fit_content = true
+horizontal_alignment = 1
+
+[node name="ResourceContainer2" type="VBoxContainer" parent="NinePatchRect/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="NinePatchRect/MarginContainer/HBoxContainer/ResourceContainer2"]
+layout_mode = 2
+texture = ExtResource("3_iuxoj")
+expand_mode = 4
+
+[node name="RichTextLabel" type="RichTextLabel" parent="NinePatchRect/MarginContainer/HBoxContainer/ResourceContainer2"]
+layout_mode = 2
+bbcode_enabled = true
+text = "[color=black][font_size=12]2"
+fit_content = true
+horizontal_alignment = 1
+
+[node name="ResourceContainer3" type="VBoxContainer" parent="NinePatchRect/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="NinePatchRect/MarginContainer/HBoxContainer/ResourceContainer3"]
+layout_mode = 2
+texture = ExtResource("3_iuxoj")
+expand_mode = 4
+
+[node name="RichTextLabel" type="RichTextLabel" parent="NinePatchRect/MarginContainer/HBoxContainer/ResourceContainer3"]
+layout_mode = 2
+bbcode_enabled = true
+text = "[color=black][font_size=12]2"
+fit_content = true
+horizontal_alignment = 1
+
+[node name="ResourceContainer4" type="VBoxContainer" parent="NinePatchRect/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="NinePatchRect/MarginContainer/HBoxContainer/ResourceContainer4"]
+layout_mode = 2
+texture = ExtResource("3_iuxoj")
+expand_mode = 4
+
+[node name="RichTextLabel" type="RichTextLabel" parent="NinePatchRect/MarginContainer/HBoxContainer/ResourceContainer4"]
+layout_mode = 2
+bbcode_enabled = true
+text = "[color=black][font_size=12]2"
+fit_content = true
+horizontal_alignment = 1
+
+[node name="ResourceContainer5" type="VBoxContainer" parent="NinePatchRect/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="NinePatchRect/MarginContainer/HBoxContainer/ResourceContainer5"]
+layout_mode = 2
+texture = ExtResource("3_iuxoj")
+expand_mode = 4
+
+[node name="RichTextLabel" type="RichTextLabel" parent="NinePatchRect/MarginContainer/HBoxContainer/ResourceContainer5"]
+layout_mode = 2
+bbcode_enabled = true
+text = "[color=black][font_size=12]2"
+fit_content = true
+horizontal_alignment = 1
