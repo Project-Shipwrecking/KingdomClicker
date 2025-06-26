@@ -29,7 +29,10 @@ func _ready():
 
 func _process(_delta: float):
 	#_get_biome_on_hover()
-	_read_tile_data_and_display()
+	if Global.game_state == Global.GAME_STATE.GAME:
+		_read_tile_data_and_display()
+	else: 
+		info_box.hide()
 	pass
 
 func _read_tile_data_and_display():
@@ -44,52 +47,14 @@ func _read_tile_data_and_display():
 	info_text.append_text("[color=black]" + resource_tile_manager.read_tile_datum(mouse_hover_tile))
 	info_box.size.y = info_text.get_content_height()
 
-#func _get_biome_on_hover():
-	#var mouse_pos = get_viewport().get_mouse_position()
-	#var world_pos = map_tile.get_global_mouse_position()
-	#var tile_pos = map_tile.local_to_map(world_pos)
-#
-	#if tile_pos == last_hovered_tile: return
-	## Get the biome manager and determine biome type at thistile
-	#biome_man = BiomeManager.new()
-	##var width = map.size()
-	##var height = map[0].size() if map.size() > 0 and map[0] is Array else 0
-	#scale_vec = Vector2(width, height)
-	#var dist = (Vector2(tile_pos.x + int(width/2), tile_pos.y + int(height/2)) / scale_vec).distance_to(Vector2(.5, .5))
-	#var noise = _gen_noise(width, height)
-	#var biome_noise = noise.get_noise_2d(tile_pos.x + int(width/2) + 1000, tile_pos.y + int(height/2) + 1000)
-	#var biome_type : BiomeManager.BiomeName
-	#if biome_noise < -0.3:
-		#biome_type = BiomeManager.BiomeName.DESERT
-	#elif biome_noise < 0.3:
-		#biome_type = BiomeManager.BiomeName.FOREST
-	#else:
-		#biome_type = BiomeManager.BiomeName.PLAINS
-#
-	#var resources = biome_man.get_resources_for_biome(biome_type)
-	#var resource_names = []
-	#for res in resources:
-		#resource_names.append(res.name)
-	#var info_text = "Biome: %s\nResources: %s" % [str(biome_type), ", ".join(resource_names)]
-#
-	#_show_tile_info(info_text, mouse_pos)
-	#last_hovered_tile = tile_pos
-
-#func _show_tile_info(info: String, mouse_screen_pos: Vector2):
-	#label.text = info
-	#popup.position = mouse_screen_pos + Vector2(10, 10)
-	#popup.show()
-#
-#func _hide_tile_info():
-	#popup.hide()
-
 func gen_map(width : int, height : int) -> void:
 #	Unit Vector Stuff (Honestly I still don't understand
 	var scale_vec = Vector2(width, height)
 #	Gets the noise for map generation
 	var noise = _gen_noise(width, height)
 #	Looping over a 2-D Array
-	resource_tile_manager.params(scale_vec)
+	#resource_tile_manager.params(scale_vec)
+	Global.map_made.emit(scale_vec, map_tile)
 	
 	var tiles_to_connect = []
 

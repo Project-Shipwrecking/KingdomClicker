@@ -3,8 +3,11 @@ class_name TileManager extends TileMapLayer
 @onready var map_tile := $"../MapTile" as TileMapLayer
 var tile_data : Array[Array]
 
+func _ready():
+	Global.map_made.connect(params)
+
 ## Used to init tile_data
-func params(vec:Vector2i):
+func params(vec:Vector2i, _tile:TileMapLayer):
 	for x in range(vec.x):
 		tile_data.append([])
 		for y in range(vec.y):

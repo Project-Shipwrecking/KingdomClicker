@@ -13,7 +13,13 @@ var TILE_ID = {
 	"PLAINS": Vector2i(6,5),
 } # Made to match the MapTile tileset
 
-var game_state = 0
+# Game State
+signal game_state_changed(new_val, old_val)
+var game_state = 0 :
+	set(val):
+		if val == game_state: return
+		game_state_changed.emit(val, game_state)
+		game_state = val
 
 enum GAME_STATE {
 	MAIN_MENU,
@@ -21,6 +27,9 @@ enum GAME_STATE {
 	PAUSE,
 	GAME_OVER
 }
+
+## Signal to tell everything that the map has been generated.
+signal map_made(size:Vector2i, tilemap:TileMapLayer)
 
 func game_loop():
 	pass
