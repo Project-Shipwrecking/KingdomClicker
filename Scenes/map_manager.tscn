@@ -4,16 +4,17 @@
 [ext_resource type="Script" uid="uid://cnoy0dssyl8i" path="res://Scripts/test.gd" id="3_kclx8"]
 [ext_resource type="StyleBox" uid="uid://84mse2t7ucsu" path="res://new_style_box_line.tres" id="4_tfb6w"]
 [ext_resource type="FontFile" uid="uid://biuan0c6ywcce" path="res://Assets/UI Pack/Font/Kenney Future Narrow.ttf" id="5_5l8ip"]
+[ext_resource type="Script" uid="uid://bjq6l2c8ly6ub" path="res://Scripts/map_gen.gd" id="1_6rskp"]
+[ext_resource type="TileSet" uid="uid://cdbvvkd0gkdsr" path="res://Assets/tile_sheet.tres" id="2_y5xe8"]
+[ext_resource type="Theme" uid="uid://6shp5ck1tnja" path="res://Assets/FlatUI4/kenneyUI.tres" id="3_kclo8"]
+[ext_resource type="Script" uid="uid://b6ren3fmww14r" path="res://Scripts/tile_manager.gd" id="3_te1fr"]
 
 [sub_resource type="Theme" id="Theme_p57ns"]
 default_base_scale = 0.23
 default_font = ExtResource("5_5l8ip")
 /styles/water = ExtResource("4_tfb6w")
 
-[ext_resource type="Script" uid="uid://bjq6l2c8ly6ub" path="res://Scripts/map_gen.gd" id="1_6rskp"]
-[ext_resource type="TileSet" uid="uid://cdbvvkd0gkdsr" path="res://Assets/tile_sheet.tres" id="2_y5xe8"]
-[ext_resource type="Theme" uid="uid://6shp5ck1tnja" path="res://Assets/FlatUI4/kenneyUI.tres" id="3_kclx8"]
-[ext_resource type="Script" uid="uid://b6ren3fmww14r" path="res://Scripts/tile_manager.gd" id="3_te1fr"]
+
 
 [node name="MapManager" type="Node2D" node_paths=PackedStringArray("map_tile")]
 script = ExtResource("1_6rskp")

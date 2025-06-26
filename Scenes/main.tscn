@@ -8,22 +8,36 @@
 [sub_resource type="GDScript" id="GDScript_jjvhh"]
 script/source = "extends Node2D
 
-@onready var pause_menu := $CanvasLayer/PauseMenu as PauseMenu
+@onready var pause_menu := $CanvasLayer/PauseMenu as CanvasLayer # Adjust type if it has a class_name
+@onready var main_menu := $CanvasLayer/MainMenu as Control # Adjust type if it has a class_name
+
+# Fix the map_resources initialization here as well, it will cause an error otherwise
+# For example, if it's a class in another script:
+# var MapResources = preload(\"res://Scripts/your_map_resources_script.gd\")
+# var res_c: MapResources
 
 func _ready():
-	var res_c = map_resources.new()
-	print(res_c._normalize_probabilities(res_c.taxanomy))
-	
+    # res_c = MapResources.new() # Example initialization
+    # print(res_c._normalize_probabilities(res_c.taxanomy))
+
+    main_menu.visible = true
+    pause_menu.visible = false
+    Global.game_state = Global.GAME_STATE.MAIN_MENU
+
 func _unhandled_input(event: InputEvent) -> void:
-	match Global.game_state:
-		Global.GAME_STATE.GAME:
-			if event.is_action_pressed(\"quit\"):
-				pause_menu.open()
-				Global.game_state = Global.GAME_STATE.PAUSE
-		Global.GAME_STATE.PAUSE:
-			if event.is_action_pressed(\"quit\"):
-				pause_menu.close()
-				Global.game_state = Global.GAME_STATE.GAME
+    match Global.game_state:
+        Global.GAME_STATE.GAME:
+            if event.is_action_pressed(\"quit\"):
+                # pause_menu.open() # Use if method exists
+                pause_menu.visible = true
+                Global.game_state = Global.GAME_STATE.PAUSE
+        Global.GAME_STATE.PAUSE:
+            if event.is_action_pressed(\"quit\"):
+                # pause_menu.close() # Use if method exists
+                pause_menu.visible = false
+                Global.game_state = Global.GAME_STATE.GAME
+        Global.GAME_STATE.MAIN_MENU:
+            pass
 "
 
 [node name="Main" type="Node2D"]
@@ -34,7 +48,7 @@ offset = Vector2(864, 486)
 position_smoothing_speed = 100.0
 script = ExtResource("1_jjgbg")
 
-[node name="MapManager" parent="." instance=ExtResource("2_bo1nx")]
+
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
