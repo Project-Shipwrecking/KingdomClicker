@@ -8,44 +8,40 @@ var entities : Array[Troop] = []
 
 var buildings : Array[Building]= []
 
-var possessed_land = [] # add coords here
+## List of coordinates that are territory of this entity in Vector2i
+var possessed_land : Array[Vector2i] = [] # add coords here
 
 # states of action
 var expanding = false
 var build_order = []
 var peace_treaties = []
 
-var map_gen = [[]]
 var players = []
 var tile_man : TileManager
 
 ## Function with expansion logic every turn
-#func expand():
-	#var expansion_tiles = []
-	#for tile in possessed_land:
-		#var possible_tiles = []
-		#var contested_tiles = []
-		#var x = tile[0]
-		#var y = tile[1]
-		#if (y + 1 < map_gen[0].size() and map_gen[x][y + 1] == "OPEN"):
-			#possible_tiles.append(Vector2(x, y + 1))
-		#if (y - 1 >= 0 and map_gen[x][y - 1] == "OPEN"):
-			#possible_tiles.append(Vector2(x, y - 1))
-		#if (x + 1 < map_gen.size() and map_gen[x + 1][y] == "OPEN"):
-			#possible_tiles.append(Vector2(x + 1, y))
-		#if (x - 1 >= 0 and map_gen[x - 1][y] == "OPEN"):
-			#possible_tiles.append(Vector2(x - 1, y))
-		#if (y + 1 < map_gen[0].size() and map_gen[x][y + 1] == "OCCUPIED"):
-			#contested_tiles.append(Vector2(x, y + 1))
-		#if (y - 1 >= 0 and map_gen[x][y - 1] == "OCCUPIED"):
-			#contested_tiles.append(Vector2(x, y - 1))
-		#if (x + 1 < map_gen.size() and map_gen[x + 1][y] == "OCCUPIED"):
-			#contested_tiles.append(Vector2(x + 1, y))
-		#if (x - 1 >= 0 and map_gen[x - 1][y] == "OCCUPIED"):
-			#contested_tiles.append(Vector2(x - 1, y))
-		#var total_list = possible_tiles + contested_tiles
-		#if total_list.size() == 0:
-			#continue
+func expand():
+	var map_gen = tile_man.tile_data
+	var expansion_tiles = []
+	for tile in possessed_land:
+		
+		var possible_tiles = []
+		var contested_tiles = []
+		var x = tile.x
+		var y = tile.y
+		var surrounding_tiles = tile_man.get_surrounding_cells(tile)
+		for surr_tile in surrounding_tiles:
+			var data = tile_man.get_tile_datum(surr_tile)
+			if data.territory_owned_by == null:
+				possible_tiles.append(data)
+			elif data.territory_owned_by == self:
+				pass
+			else:
+				contested_tiles.append(data)
+		
+		var total_list = possible_tiles + contested_tiles
+		if total_list.size() == 0:
+			continue
 		#var move_tile = total_list[randi() % total_list.size()]
 		#if move_tile in contested_tiles:
 			#for part in players:
@@ -62,11 +58,12 @@ var tile_man : TileManager
 						#entities['SOLDIERS'] -= soldiers_per_tile_self
 		#else:
 			#expansion_tiles.append(move_tile)
-			#
-	#for coordinate in expansion_tiles:
-		#var tile = tile_man.get_tile_datum(coordinate)
-		#tile.territory_owned_by = self
-	#possessed_land = possessed_land + expansion_tiles
+			
+	for coordinate in expansion_tiles:
+		var tile = tile_man.get_tile_datum(coordinate)
+		tile.territory_owned_by = self
+	possessed_land = possessed_land + expansion_tiles
+
 
 func _ready() -> void:
 	_resource_fill()
@@ -80,19 +77,22 @@ func update_internal_map(_size, tilemap:TileMapLayer):
 ## Init function for filling inventory
 func _resource_fill():
 	for item in GlobalResources.RESOURCES:
+		# Initializes resource with 'type_id' of 'item'
 		var res = Resources.new(item)
 		resources.append(res)
 		#resources[item] = 0
-	for item in GlobalResources.ENTITIES:
-		resources.append(Troop.new())
+	for item in GlobalResources.TROOPS:
+		resources.append(Troop.new(item))
 		#entities[item] = 0
 
 ## Returns the item in the inventory with the same name as passed through.
-func _find_res(name, list:Array):
+func _find_res(name, list:Array) -> Object:
 	for obj in list:
 		if obj.name == name:
 			return obj
-
+	return null
+	#list.get_typed_class_name().new()
+	# Just realized that i need to access the id somehow using the name...
 
 ## Assumes all Item and Resources are all in the inventory with amount 0
 ## [br]
@@ -111,21 +111,7 @@ func increment_resource_entity(resource_entity : Array[Resources], amounts:Array
 			var ent = _find_res(res.name, resources)
 			ent.amount = max(ent.amount + amount_of_res, 0)
 		
-#
-#func remove_resource_entity(resource_entity, amounts):
-	#for idx in range(min(resource_entity.size(), amounts.size())):
-		#var item = resource_entity[idx]
-		#var amount = amounts[idx]
-#
-		#if item in resources:
-			#resources[item] = max(resources[item] - amount, 0)
-		#elif item in entities:
-			#entities[item] = max(entities[item] - amount, 0)
-		#else:
-			#if typeof(item) == TYPE_INT:
-				#resources[item] = amount
-			#else:
-				#entities[item] = amount
+
 ## Assumes all Item and Resources are all in the inventory with amount 0
 ## [br]
 ## Also assumes items and resources are differentiated by their 'name' variable
@@ -170,18 +156,24 @@ func add_building(building_name, location: Vector2):
 
 ## Returns true if a building was destroyed and false if it doesn't.
 func destroy_building() -> bool:
-	pass
+	return false
 
-func add_territory(tiles):
-	for tile in tiles:
+func add_territory(tiles:Array[Vector2i]):
+	for tile:Vector2i in tiles:
 		if tile not in possessed_land:
 			possessed_land.append(tile)
-			map_man
-			
+			var tile_datum = tile_man.get_tile_datum(tile)
+			# if tile is owned, remove it from the other entity's possessed land
+			var prev_owner = tile_datum.territory_owned_by
+			if prev_owner != null:
+				prev_owner.remove_territory([tile])
+			tile_datum.territory_owned_by = self
 
-func remove_territory(tiles):
+func remove_territory(tiles:Array[Vector2i]):
 	for tile in possessed_land:
 		possessed_land.erase(tile)
+		var tile_datum = tile_man.get_tile_datum(tile)
+		tile_datum.territory_owned_by = null
 
 func check_death():
 	return (len(possessed_land) <= 0)

@@ -76,7 +76,7 @@ func get_resources_for_biome(biome_index: int) -> Array:
 	for res_name in biomes[biome_index].keys():
 		if res_name == "resource_scattering": continue
 		var res_data = biomes[biome_index][res_name]
-		var resToPush = Resources.new(res_name, res_data.atlas_coord, res_data.probability, res_data.tilesheet_id)
+		var resToPush = Resources.new(-1, res_name, res_data.atlas_coord, res_data.probability, res_data.tilesheet_id)
 		typed_resources.append(resToPush)
 		
 	return typed_resources
