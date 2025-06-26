@@ -4,6 +4,14 @@ extends Node2D
 @export_range(1, 10) var sigma : float = 3.5 # smaller sigma means bigger island
 @export var map_tile : TileMapLayer
 @export var resource_tile : TileMapLayer
+
+# UI Labels
+@onready var popup = $CanvasLayer/PopupPanel
+@onready var label = popup.get_node(^"RichTextLabel")
+
+var last_hovered_tile = null
+
+
 var map : Array[Array] = []
 
 # 3 layers: layer 1 is tile layer, 2 is biome, and 3 is resource
@@ -18,7 +26,45 @@ func _ready():
 	# Renders the map
 	gen_map(50,50)
 	#TODO Have the main scene initialize this.
+	
+func _process(_delta: float):
+	var mouse_pos = get_viewport().get_mouse_position()
+	var world_pos = map_tile.get_global_mouse_position()
+	var tile_pos = map_tile.local_to_map(world_pos)
 
+	if tile_pos != last_hovered_tile:
+		# Get the biome manager and determine biome type at this tile
+		var biome_man = BiomeManager.new()
+		var width = map.size()
+		var height = map[0].size() if map.size() > 0 and map[0] is Array else 0
+		var scale_vec = Vector2(width, height)
+		var dist = (Vector2(tile_pos.x + int(width/2), tile_pos.y + int(height/2)) / scale_vec).distance_to(Vector2(.5, .5))
+		var noise = _gen_noise(width, height)
+		var biome_noise = noise.get_noise_2d(tile_pos.x + int(width/2) + 1000, tile_pos.y + int(height/2) + 1000)
+		var biome_type : BiomeManager.BiomeName
+		if biome_noise < -0.3:
+			biome_type = BiomeManager.BiomeName.DESERT
+		elif biome_noise < 0.3:
+			biome_type = BiomeManager.BiomeName.FOREST
+		else:
+			biome_type = BiomeManager.BiomeName.PLAINS
+
+		var resources = biome_man.get_resources_for_biome(biome_type)
+		var resource_names = []
+		for res in resources:
+			resource_names.append(res.name)
+		var info_text = "Biome: %s\nResources: %s" % [str(biome_type), ", ".join(resource_names)]
+
+		_show_tile_info(info_text, mouse_pos)
+		last_hovered_tile = tile_pos
+
+func _show_tile_info(info: String, mouse_screen_pos: Vector2):
+	label.text = info
+	popup.position = mouse_screen_pos + Vector2(10, 10)
+	popup.show()
+
+func _hide_tile_info():
+	popup.hide()
 
 func gen_map(width : int, height : int) -> void:
 #	Creates a new Biome Manager from Assets/Resources/biomes.gd

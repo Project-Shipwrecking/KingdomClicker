@@ -8,9 +8,6 @@ enum BiomeName {
 }
 
 var biomes = [
-	# [
-	# 	preload("res://Assets/Resources/sand.tres"),
-	# ],
 	{
 		'sand': {
 			'probability': 0.6,
@@ -53,7 +50,7 @@ var biomes = [
 			'atlas_coord': Vector2i(6, 2)
 		}
 	}
-]
+];
 
 func get_resources_for_biome(biome_index: int) -> Array:
 	var typed_resources: Array[Resources]= []
@@ -70,7 +67,7 @@ func get_resources_for_biome(biome_index: int) -> Array:
 		#print(res, " is Resources: ", res is Resources)
 		#print(res, " is Resource: ", res is Resource)
 		#print(res.get_script())
-	print_debug(typed_resources)
+	# print_debug(typed_resources)
 	return typed_resources
 
 func spawn_resource_in_biome(biome_index: int) -> Resources:
@@ -80,7 +77,7 @@ func spawn_resource_in_biome(biome_index: int) -> Resources:
 func pick_weighted_random_resource(resources: Array) -> Resources:
 	var total_weight = 0.0
 	for res in resources:
-		print_debug(res is Resources)
+		# print_debug(res is Resources)
 		total_weight += res.probability
 
 	var rnd = randf() * total_weight
