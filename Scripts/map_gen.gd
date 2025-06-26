@@ -14,6 +14,14 @@ var last_hovered_tile = null
 
 var map : Array[Array] = []
 
+# 3 layers: layer 1 is tile layer, 2 is biome, and 3 is resource
+
+var schema_example = {
+	'tiles': [[]],
+	'biome': [[]],
+	'resource': [[]]
+}
+
 func _ready():
 	# Renders the map
 	gen_map(50,50)

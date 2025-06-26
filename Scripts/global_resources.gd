@@ -39,3 +39,13 @@ enum ENTITIES {
 	CITIZEN,
 	WORKER,
 }
+
+enum TILE_TYPE {
+	WATER,
+	LAND,
+	MOUNTAIN
+}
+
+enum BIOME {
+	
+}
