@@ -14,5 +14,8 @@ func _init(given_name:String, given_atlas_coord:Vector2i, given_probability:floa
 	self.tileset_id = given_tileset_id
 	
 
+func _to_string() -> String:
+	return "%s" % name
+
 func print_string() -> String:
 	return "Resources(name='%s', probability=%.2f, atlas_coord=%s)" % [name, probability, atlas_coord]

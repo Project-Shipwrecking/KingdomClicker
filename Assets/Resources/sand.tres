@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="Resources" load_steps=2 format=3 uid="uid://b32dej5vflxnx"]
-
-[ext_resource type="Script" uid="uid://b4nmktuc47sd0" path="res://Scripts/resources.gd" id="1_3dmee"]
-
-[resource]
-script = ExtResource("1_3dmee")
-name = "Sand"
-probability = 1.0
-metadata/_custom_type_script = "uid://b4nmktuc47sd0"

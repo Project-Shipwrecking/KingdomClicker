@@ -1,18 +1,16 @@
 extends Node2D
 
-@onready var test = $Test
 @export_range(1, 10) var sigma : float = 3.5 # smaller sigma means bigger island
 @export var map_tile : TileMapLayer
-@export var resource_tile : TileMapLayer
+@onready var resource_tile_manager := $ResourceTile as TileManager
 
 # UI Labels
-@onready var popup = $CanvasLayer/PopupPanel
-@onready var label = popup.get_node(^"RichTextLabel")
+@onready var canvas_layer := $CanvasLayer as CanvasLayer
+@onready var info_box := $CanvasLayer/InfoBox as Panel
+@onready var info_text := info_box.get_node(^"Info") as RichTextLabel
 
 var last_hovered_tile = null
 
-
-var map : Array[Array] = []
 @onready var biome_man = BiomeManager.new()
 @onready var scale_vec : Vector2
 
@@ -30,45 +28,60 @@ func _ready():
 	#TODO Have the main scene initialize this.
 
 func _process(_delta: float):
-	_get_biome_on_hover()
-func _get_biome_on_hover():
-	var mouse_pos = get_viewport().get_mouse_position()
-	var world_pos = map_tile.get_global_mouse_position()
-	var tile_pos = map_tile.local_to_map(world_pos)
+	#_get_biome_on_hover()
+	_read_tile_data_and_display()
+	pass
 
-	if tile_pos == last_hovered_tile: return
-	# Get the biome manager and determine biome type at thistile
-	biome_man = BiomeManager.new()
-	var width = map.size()
-	var height = map[0].size() if map.size() > 0 and map[0] is Array else 0
-	scale_vec = Vector2(width, height)
-	var dist = (Vector2(tile_pos.x + int(width/2), tile_pos.y + int(height/2)) / scale_vec).distance_to(Vector2(.5, .5))
-	var noise = _gen_noise(width, height)
-	var biome_noise = noise.get_noise_2d(tile_pos.x + int(width/2) + 1000, tile_pos.y + int(height/2) + 1000)
-	var biome_type : BiomeManager.BiomeName
-	if biome_noise < -0.3:
-		biome_type = BiomeManager.BiomeName.DESERT
-	elif biome_noise < 0.3:
-		biome_type = BiomeManager.BiomeName.FOREST
-	else:
-		biome_type = BiomeManager.BiomeName.PLAINS
+func _read_tile_data_and_display():
+	var mouse_hover_tile : Vector2i = resource_tile_manager.local_to_map(get_local_mouse_position())
+	var tile_data : TileDatum = resource_tile_manager.get_tile_datum(mouse_hover_tile)
+	if tile_data == null: 
+		info_box.hide()
+		return
+	info_box.show()
+	info_box.set_position(get_viewport().get_mouse_position() + Vector2(20,0), true)
+	info_text.clear()
+	info_text.append_text("[color=black]" + resource_tile_manager.read_tile_datum(mouse_hover_tile))
+	info_box.size.y = info_text.get_content_height()
 
-	var resources = biome_man.get_resources_for_biome(biome_type)
-	var resource_names = []
-	for res in resources:
-		resource_names.append(res.name)
-	var info_text = "Biome: %s\nResources: %s" % [str(biome_type), ", ".join(resource_names)]
+#func _get_biome_on_hover():
+	#var mouse_pos = get_viewport().get_mouse_position()
+	#var world_pos = map_tile.get_global_mouse_position()
+	#var tile_pos = map_tile.local_to_map(world_pos)
+#
+	#if tile_pos == last_hovered_tile: return
+	## Get the biome manager and determine biome type at thistile
+	#biome_man = BiomeManager.new()
+	##var width = map.size()
+	##var height = map[0].size() if map.size() > 0 and map[0] is Array else 0
+	#scale_vec = Vector2(width, height)
+	#var dist = (Vector2(tile_pos.x + int(width/2), tile_pos.y + int(height/2)) / scale_vec).distance_to(Vector2(.5, .5))
+	#var noise = _gen_noise(width, height)
+	#var biome_noise = noise.get_noise_2d(tile_pos.x + int(width/2) + 1000, tile_pos.y + int(height/2) + 1000)
+	#var biome_type : BiomeManager.BiomeName
+	#if biome_noise < -0.3:
+		#biome_type = BiomeManager.BiomeName.DESERT
+	#elif biome_noise < 0.3:
+		#biome_type = BiomeManager.BiomeName.FOREST
+	#else:
+		#biome_type = BiomeManager.BiomeName.PLAINS
+#
+	#var resources = biome_man.get_resources_for_biome(biome_type)
+	#var resource_names = []
+	#for res in resources:
+		#resource_names.append(res.name)
+	#var info_text = "Biome: %s\nResources: %s" % [str(biome_type), ", ".join(resource_names)]
+#
+	#_show_tile_info(info_text, mouse_pos)
+	#last_hovered_tile = tile_pos
 
-	_show_tile_info(info_text, mouse_pos)
-	last_hovered_tile = tile_pos
-
-func _show_tile_info(info: String, mouse_screen_pos: Vector2):
-	label.text = info
-	popup.position = mouse_screen_pos + Vector2(10, 10)
-	popup.show()
-
-func _hide_tile_info():
-	popup.hide()
+#func _show_tile_info(info: String, mouse_screen_pos: Vector2):
+	#label.text = info
+	#popup.position = mouse_screen_pos + Vector2(10, 10)
+	#popup.show()
+#
+#func _hide_tile_info():
+	#popup.hide()
 
 func gen_map(width : int, height : int) -> void:
 #	Unit Vector Stuff (Honestly I still don't understand
@@ -76,11 +89,11 @@ func gen_map(width : int, height : int) -> void:
 #	Gets the noise for map generation
 	var noise = _gen_noise(width, height)
 #	Looping over a 2-D Array
-
+	resource_tile_manager.params(scale_vec)
+	
 	var tiles_to_connect = []
 
 	for x in range(width):
-		map.append([])
 		for y in range(height):
 			# Gaussian part
 			var dist = (Vector2(x,y)/scale_vec).distance_to(Vector2(.5,.5))
@@ -102,13 +115,16 @@ func gen_map(width : int, height : int) -> void:
 			else:
 				biome_type = BiomeManager.BiomeName.PLAINS
 				biome_atlas = Global.TILE_ID["PLAINS"]
+			
 			# Once biome is picked, sets the land tile accordingly.
 			map_tile.set_cell(Vector2i(x,y), 1, biome_atlas) 
 			
 			# Resource layer starts here
-			if randf() < biome_man.biomes[biome_type]["resource_scattering"]: continue
+			if randf() < biome_man.biomes[biome_type]["resource_scattering"]: 
+				resource_tile_manager.set_cell_resource_and_biome(Vector2i(x,y), biome_type, biome_atlas)
+				continue # Sets the biome without resources
 			var resource_to_spawn = biome_man.spawn_resource_in_biome(biome_type)
-			resource_tile.set_cell(Vector2i(x,y), resource_to_spawn.tileset_id, resource_to_spawn.atlas_coord)
+			resource_tile_manager.set_cell_resource_and_biome(Vector2i(x,y), biome_type, biome_atlas, resource_to_spawn)
 	
 	#map_tile.set_cells_terrain_connect(tiles_to_connect, 0, 0, false)
 	#RIP Tile edges LOLLLL cri
