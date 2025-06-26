@@ -15,6 +15,11 @@ var buildings = {
 
 var possessed_land = [] # add coords here
 
+# states of action
+var expanding = false
+var build_order = []
+
+
 func _resource_fill():
 	for item in global_resources.RESOURCES:
 		resources[item] = 0

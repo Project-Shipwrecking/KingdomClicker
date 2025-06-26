@@ -11,3 +11,15 @@ var TILE_ID = {
 	"LAND": Vector2i(6,1),
 	"RESOURCE": Vector2i(8,2),
 } # Made to match the MapTile tileset
+
+var game_state = 0
+
+enum GAME_STATE {
+	MAIN_MENU,
+	GAME,
+	PAUSE,
+	GAME_OVER
+}
+
+func game_loop():
+	pass
