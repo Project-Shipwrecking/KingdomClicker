@@ -21,5 +21,7 @@ enum GAME_STATE {
 	GAME_OVER
 }
 
+var players = []
+
 func game_loop():
 	pass

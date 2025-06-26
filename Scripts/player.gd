@@ -18,7 +18,7 @@ var possessed_land = [] # add coords here
 # states of action
 var expanding = false
 var build_order = []
-
+var peace_treaties = []
 
 func _resource_fill():
 	for item in global_resources.RESOURCES:
