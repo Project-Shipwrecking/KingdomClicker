@@ -1,14 +1,44 @@
-[gd_scene load_steps=4 format=3 uid="uid://dhan6hfycmk67"]
+[gd_scene load_steps=6 format=3 uid="uid://dhan6hfycmk67"]
 
-[ext_resource type="Script" uid="uid://cf7ph77e28wrs" path="res://Scenes/test.gd" id="1_8gbba"]
 [ext_resource type="Script" uid="uid://dusjgdyy7xnv0" path="res://Scripts/camera.gd" id="1_jjgbg"]
 [ext_resource type="PackedScene" uid="uid://dhd21pir7fbsh" path="res://Scenes/map_manager.tscn" id="2_bo1nx"]
+[ext_resource type="PackedScene" uid="uid://dagq5n6bqn3fv" path="res://Scenes/pause_menu.tscn" id="4_jjvhh"]
+[ext_resource type="PackedScene" uid="uid://bjikkp21uyvjf" path="res://Scenes/main_menu.tscn" id="5_kry3j"]
+
+[sub_resource type="GDScript" id="GDScript_jjvhh"]
+script/source = "extends Node2D
+
+@onready var pause_menu := $CanvasLayer/PauseMenu as PauseMenu
+
+func _ready():
+	var res_c = map_resources.new()
+	print(res_c._normalize_probabilities(res_c.taxanomy))
+	
+func _unhandled_input(event: InputEvent) -> void:
+	match Global.game_state:
+		Global.GAME_STATE.GAME:
+			if event.is_action_pressed(\"quit\"):
+				pause_menu.open()
+				Global.game_state = Global.GAME_STATE.PAUSE
+		Global.GAME_STATE.PAUSE:
+			if event.is_action_pressed(\"quit\"):
+				pause_menu.close()
+				Global.game_state = Global.GAME_STATE.GAME
+"
 
 [node name="Main" type="Node2D"]
-script = ExtResource("1_8gbba")
+script = SubResource("GDScript_jjvhh")
 
 [node name="Camera2D" type="Camera2D" parent="."]
+offset = Vector2(864, 486)
 position_smoothing_speed = 100.0
 script = ExtResource("1_jjgbg")
 
 [node name="MapManager" parent="." instance=ExtResource("2_bo1nx")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="PauseMenu" parent="CanvasLayer" instance=ExtResource("4_jjvhh")]
+visible = false
+
+[node name="MainMenu" parent="CanvasLayer" instance=ExtResource("5_kry3j")]

@@ -1,7 +1,6 @@
+
 [gd_scene load_steps=7 format=3 uid="uid://dhd21pir7fbsh"]
 
-[ext_resource type="Script" uid="uid://bjq6l2c8ly6ub" path="res://Scripts/map_gen.gd" id="1_6rskp"]
-[ext_resource type="TileSet" uid="uid://cdbvvkd0gkdsr" path="res://Assets/temp_tile_set.tres" id="2_y5xe8"]
 [ext_resource type="Script" uid="uid://cnoy0dssyl8i" path="res://Scripts/test.gd" id="3_kclx8"]
 [ext_resource type="StyleBox" uid="uid://84mse2t7ucsu" path="res://new_style_box_line.tres" id="4_tfb6w"]
 [ext_resource type="FontFile" uid="uid://biuan0c6ywcce" path="res://Assets/UI Pack/Font/Kenney Future Narrow.ttf" id="5_5l8ip"]
@@ -11,19 +10,22 @@ default_base_scale = 0.23
 default_font = ExtResource("5_5l8ip")
 /styles/water = ExtResource("4_tfb6w")
 
-[node name="MapManager" type="Node2D" node_paths=PackedStringArray("map_tile", "resource_tile")]
+[ext_resource type="Script" uid="uid://bjq6l2c8ly6ub" path="res://Scripts/map_gen.gd" id="1_6rskp"]
+[ext_resource type="TileSet" uid="uid://cdbvvkd0gkdsr" path="res://Assets/tile_sheet.tres" id="2_y5xe8"]
+[ext_resource type="Theme" uid="uid://6shp5ck1tnja" path="res://Assets/FlatUI4/kenneyUI.tres" id="3_kclx8"]
+[ext_resource type="Script" uid="uid://b6ren3fmww14r" path="res://Scripts/tile_manager.gd" id="3_te1fr"]
+
+[node name="MapManager" type="Node2D" node_paths=PackedStringArray("map_tile")]
 script = ExtResource("1_6rskp")
 map_tile = NodePath("MapTile")
-resource_tile = NodePath("ResourceTile")
+
+[node name="ResourceTile" type="TileMapLayer" parent="."]
+z_index = 1
+tile_set = ExtResource("2_y5xe8")
+script = ExtResource("3_te1fr")
 
 [node name="MapTile" type="TileMapLayer" parent="."]
 tile_set = ExtResource("2_y5xe8")
-
-[node name="ResourceTile" type="TileMapLayer" parent="."]
-tile_set = ExtResource("2_y5xe8")
-
-[node name="Test" type="Node" parent="."]
-script = ExtResource("3_kclx8")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -36,3 +38,22 @@ offset_right = 96.0
 offset_bottom = 96.0
 theme = SubResource("Theme_p57ns")
 theme_override_colors/table_border = Color(0.623529, 0.580392, 0.788235, 1)
+[node name="InfoBox" type="Panel" parent="CanvasLayer"]
+visible = false
+custom_minimum_size = Vector2(175, 180)
+offset_right = 100.0
+offset_bottom = 180.0
+theme = ExtResource("3_kclx8")
+
+[node name="Info" type="RichTextLabel" parent="CanvasLayer/InfoBox"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+theme = ExtResource("3_kclx8")
+bbcode_enabled = true
+text = "[color=black]asdfer"
