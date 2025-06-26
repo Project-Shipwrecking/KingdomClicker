@@ -32,7 +32,7 @@ func close() -> void:
 
 func open() -> void:
 	show()
-	resume_button.grab_focus()
+	#resume_button.grab_focus()
 
 	modulate.a = 0.0
 	center_cont.anchor_bottom = 0.5
