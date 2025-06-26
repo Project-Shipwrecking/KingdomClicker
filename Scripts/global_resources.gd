@@ -1,4 +1,4 @@
-class_name global_resources
+class_name GlobalResources
 extends Node
 
 enum RESOURCES {
@@ -34,7 +34,7 @@ enum RESOURCES {
 	# BOWS,
 }
 
-enum ENTITIES {
+enum TROOPS {
 	SOLDIER,
 	CITIZEN,
 	WORKER,

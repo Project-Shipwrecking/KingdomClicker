@@ -1,4 +1,4 @@
-extends Node2D
+class_name MapManager extends Node2D
 
 @export_range(1, 10) var sigma : float = 3.5 # smaller sigma means bigger island
 @export var map_tile : TileMapLayer
@@ -54,7 +54,7 @@ func gen_map(width : int, height : int) -> void:
 	var noise = _gen_noise(width, height)
 #	Looping over a 2-D Array
 	#resource_tile_manager.params(scale_vec)
-	Global.map_made.emit(scale_vec, map_tile)
+	Global.map_made.emit(scale_vec, resource_tile_manager)
 	
 	var tiles_to_connect = []
 

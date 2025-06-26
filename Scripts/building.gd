@@ -1,9 +1,18 @@
-class_name building
+class_name Building
 extends Node
 
-var building = {
+static var buildings = {
 	
 }
+## By default is -1, and increased once added to inventory.
+var amount = -1
+var id = -1
+var owned_by : Entity
+var location : Vector2i
+var type : String : 
+	set(value):
+		type = value
+		#TODO add functions to initialze stats for the building like health and stuff
 
 func add_building_data(building_id,
 					building_name,
@@ -13,7 +22,7 @@ func add_building_data(building_id,
 					build_output,
 					build_rate,
 					building_hp):
-	building[building_id] = {
+	buildings[building_id] = {
 		"name": building_name,
 		"texture": building_texture,
 		"requirements": build_requirements,
@@ -45,9 +54,9 @@ func add_building_data(building_id,
 	999 # Building HP
 )"""
 
-func check_requirements(location_data, resources, building_id):
-	var locational_requirements = building[building_id]["requirements"]["location"]
-	var requirements_resources = building[building_id]["requirements"]["resources"]
+static func check_requirements(location_data, resources, building_id):
+	var locational_requirements = buildings[building_id]["requirements"]["location"]
+	var requirements_resources = buildings[building_id]["requirements"]["resources"]
 	if location_data not in locational_requirements:
 		return false
 	for item in requirements_resources:
@@ -56,7 +65,7 @@ func check_requirements(location_data, resources, building_id):
 	return true
 
 func check_input(resources, building_id):
-	var requirements = building[building_id]["input"]
+	var requirements = buildings[building_id]["input"]
 	for item in requirements:
 		if resources[item] < requirements[item]:
 			return false

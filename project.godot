@@ -18,6 +18,7 @@ config/icon="res://Assets/icon.svg"
 [autoload]
 
 Global="*res://Scripts/global.gd"
+GlobalResources="res://Scripts/global_resources.gd"
 
 [display]
 
