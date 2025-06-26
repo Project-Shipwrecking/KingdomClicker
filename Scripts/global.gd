@@ -1,3 +1,4 @@
+class_name global
 extends Node
 
 @onready var screen_size : Vector2 = get_viewport().get_visible_rect().size
@@ -21,7 +22,11 @@ enum GAME_STATE {
 	GAME_OVER
 }
 
-var players = []
+var players = {
+	
+}
+
+var map = [[]]
 
 func game_loop():
 	pass
