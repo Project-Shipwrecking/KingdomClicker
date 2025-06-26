@@ -7,9 +7,10 @@ enum TILE_TYPE {
 	RESOURCE,
 } 
 var TILE_ID = {
-	"SEA": Vector2i(4,1),
-	"LAND": Vector2i(6,1),
-	"RESOURCE": Vector2i(8,2),
+	"SEA": Vector2i(15,11),
+	"DESERT": Vector2i(1,1),
+	"FOREST": Vector2i(6,1),
+	"PLAINS": Vector2i(6,5),
 } # Made to match the MapTile tileset
 
 var game_state = 0
