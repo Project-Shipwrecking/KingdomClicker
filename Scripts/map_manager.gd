@@ -1,7 +1,7 @@
 class_name MapManager extends Node2D
 
 @export_range(1, 10) var sigma : float = 3.5 # smaller sigma means bigger island
-@export var map_tile : TileMapLayer
+@onready var map_tile := $MapTile as TileMapLayer
 @onready var resource_tile_manager := $ResourceTile as TileManager
 
 # UI Labels
