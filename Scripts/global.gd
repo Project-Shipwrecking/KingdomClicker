@@ -7,6 +7,7 @@ enum TILE_TYPE {
 	LAND,
 	RESOURCE,
 } 
+
 var TILE_ID = {
 	"SEA": Vector2i(15,11),
 	"DESERT": Vector2i(1,1),

@@ -1,0 +1,24 @@
+[gd_scene load_steps=6 format=3 uid="uid://dhan6hfycmk67"]
+
+[ext_resource type="Script" uid="uid://dusjgdyy7xnv0" path="res://Scripts/camera.gd" id="1_jjgbg"]
+[ext_resource type="Script" uid="uid://d1o1ys4sv5c5h" path="res://Scripts/main.gd" id="1_jjvhh"]
+[ext_resource type="PackedScene" uid="uid://dhd21pir7fbsh" path="res://Scenes/map_manager.tscn" id="3_kry3j"]
+[ext_resource type="PackedScene" uid="uid://dagq5n6bqn3fv" path="res://Scenes/pause_menu.tscn" id="4_jjvhh"]
+[ext_resource type="PackedScene" uid="uid://bjikkp21uyvjf" path="res://Scenes/main_menu.tscn" id="5_kry3j"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_jjvhh")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+offset = Vector2(864, 486)
+position_smoothing_speed = 100.0
+script = ExtResource("1_jjgbg")
+
+[node name="MapManager" parent="." instance=ExtResource("3_kry3j")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="PauseMenu" parent="CanvasLayer" instance=ExtResource("4_jjvhh")]
+visible = false
+
+[node name="MainMenu" parent="CanvasLayer" instance=ExtResource("5_kry3j")]
