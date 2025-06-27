@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dagq5n6bqn3fv"]
 
 [ext_resource type="Theme" uid="uid://6shp5ck1tnja" path="res://Assets/FlatUI4/kenneyUI.tres" id="1_k0w1u"]
-[ext_resource type="Script" uid="uid://mr2sa6vvf6g3" path="res://Scripts/pause_menu.gd" id="2_bpdek"]
+[ext_resource type="Script" uid="uid://mr2sa6vvf6g3" path="res://Scripts/UI/pause_menu.gd" id="2_bpdek"]
 
 [node name="PauseMenu" type="Control"]
 process_mode = 3

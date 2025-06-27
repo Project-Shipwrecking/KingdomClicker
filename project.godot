@@ -17,8 +17,8 @@ config/icon="res://Assets/icon.svg"
 
 [autoload]
 
-Global="*res://Scripts/global.gd"
-GlobalResources="res://Scripts/global_resources.gd"
+Global="*res://Scripts/Systems/global.gd"
+GlobalResources="res://Scripts/Systems/global_resources.gd"
 
 [display]
 
