@@ -10,7 +10,7 @@ var resources : Array[Resources] = [] :
 		if self is Player:
 			self.res_changed.emit(value)
 
-var entities : Array[Troop] = []
+var troops : Array[Troop] = []
 
 var buildings : Array[Building]= []
 
@@ -27,54 +27,45 @@ var tile_man : TileManager
 
 ## Function with expansion logic every turn
 func expand():
-	var map_gen = tile_man.tile_data
-	var expansion_tiles = []
-	for tile in possessed_land:
-		
-		var possible_tiles = []
-		var contested_tiles = []
-		var x = tile.x
-		var y = tile.y
-		var surrounding_tiles = tile_man.get_surrounding_cells(tile)
-		for surr_tile in surrounding_tiles:
-			var data = tile_man.get_tile_datum(surr_tile)
-			if data.territory_owned_by == null:
-				possible_tiles.append(data)
-			elif data.territory_owned_by == self:
-				pass
-			else:
-				contested_tiles.append(data)
-		
-		var total_list = possible_tiles + contested_tiles
-		if total_list.size() == 0:
-			continue
-		# Expansion is randomized
-		var move_tile = total_list[randi() % total_list.size()]
-		
-		# Combat system
-		#TODO give player chance to skip soldier
-		#if move_tile in contested_tiles:
-			#for part in players:
-				#if move_tile in part.possessed_land:
-					## Assuming troops are spread evenly
-					#var soldiers_per_tile_enemy = len(part.entities['SOLDIERS']) / len(part.possessed_land) # update logic later
-					#var soldiers_per_tile_self = len(entities['SOLDIERS']) / len(possessed_land) # update logic later
-					#if soldiers_per_tile_self > soldiers_per_tile_enemy:
-						#expansion_tiles.append(move_tile)
-						#part.possessed_land.erase(move_tile)
-						#part.entities['SOLDIERS'] -= soldiers_per_tile_enemy
-						#entities['SOLDIERS'] -= soldiers_per_tile_enemy
-					#else:
-						#part.entities['SOLDIERS'] -= soldiers_per_tile_self
-						#entities['SOLDIERS'] -= soldiers_per_tile_self
-		#else:
-			#expansion_tiles.append(move_tile)
-			
-	for coordinate in expansion_tiles:
-		var tile = tile_man.get_tile_datum(coordinate)
-		tile.territory_owned_by = self
-	possessed_land = possessed_land + expansion_tiles
+	var expansion_targets: Dictionary = {}
 
+	var border_tiles: Dictionary = {}
+	for tile_coord in possessed_land:
+		var surrounding = tile_man.get_surrounding_cells(tile_coord)
+		for surr_coord in surrounding:
+			border_tiles[surr_coord] = true
+
+	for border_coord in border_tiles.keys():
+		if border_coord in possessed_land:
+			continue
+		var tile_data = tile_man.get_tile_datum(border_coord)
+		expansion_targets[border_coord] = tile_data.territory_owned_by
+
+	var new_territory_this_turn: Array[Vector2i] = []
+
+	for target_coord in expansion_targets.keys():
+		var defender = expansion_targets[target_coord]
+
+		if defender == null:
+			new_territory_this_turn.append(target_coord)
+		else:
+			var attacker_power = 0
+			for troop in self.troops:
+				attacker_power += troop.amount
+
+			var defender_power = 0
+			for troop in defender.troops:
+				defender_power += troop.amount
+
+			var attacker_force_projection = float(attacker_power) / max(1, self.possessed_land.size())
+			var defender_force_projection = float(defender_power) / max(1, defender.possessed_land.size())
+
+			if attacker_force_projection > defender_force_projection:
+				new_territory_this_turn.append(target_coord)
+				# Troop loss logic would go here
+
+	if not new_territory_this_turn.is_empty():
+		self.add_territory(new_territory_this_turn)
 
 func _ready() -> void:
 	_resource_fill()
@@ -114,7 +105,7 @@ func increment_resource_entity(resource_entity : Array[Resources], amounts:Array
 		var amount_of_res = amounts[idx]
 
 		if res is Troop:
-			var ent = _find_res(res.name, entities)
+			var ent = _find_res(res.name, troops)
 			ent.amount = max(ent.amount + amount_of_res, 0)
 		elif res is Resources:
 			var ent = _find_res(res.name, resources)
@@ -132,7 +123,7 @@ func set_resource_entity(resource_entity : Array[Resources], amounts:Array[int])
 		var amount_of_res = amounts[idx]
 
 		if res is Troop:
-			var ent = _find_res(res.name, entities)
+			var ent = _find_res(res.name, troops)
 			ent.amount = max(amount_of_res, 0)
 		elif res is Resources:
 			var ent = _find_res(res.name, resources)
