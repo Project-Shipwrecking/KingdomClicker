@@ -2,7 +2,7 @@
 
 [ext_resource type="Theme" uid="uid://6shp5ck1tnja" path="res://Assets/FlatUI4/kenneyUI.tres" id="1_yuoa8"]
 [ext_resource type="Texture2D" uid="uid://2sortuxm24ud" path="res://Assets/UI Pack/PNG/Grey/Default/button_square_flat.png" id="2_7mg63"]
-[ext_resource type="Script" uid="uid://bu47rac8x2lks" path="res://Scripts/resources_ui.gd" id="2_iuxoj"]
+[ext_resource type="Script" uid="uid://bu47rac8x2lks" path="res://Scripts/UI/resources_ui.gd" id="2_iuxoj"]
 [ext_resource type="PackedScene" uid="uid://cfu5ba85pl6bq" path="res://Scenes/resource_container.tscn" id="4_7mg63"]
 
 [node name="ResourcesUI" type="Control"]

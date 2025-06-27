@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://dhan6hfycmk67"]
+[gd_scene load_steps=9 format=3 uid="uid://dhan6hfycmk67"]
 
 [ext_resource type="Script" uid="uid://dusjgdyy7xnv0" path="res://Scripts/UI/camera.gd" id="1_jjgbg"]
 [ext_resource type="Script" uid="uid://d1o1ys4sv5c5h" path="res://Scripts/main.gd" id="1_jjvhh"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dagq5n6bqn3fv" path="res://Scenes/pause_menu.tscn" id="4_jjvhh"]
 [ext_resource type="PackedScene" uid="uid://bjikkp21uyvjf" path="res://Scenes/main_menu.tscn" id="5_kry3j"]
 [ext_resource type="PackedScene" uid="uid://bjqisxseylemj" path="res://Scenes/resources_ui.tscn" id="6_21xkr"]
+[ext_resource type="Script" uid="uid://dxbwh2lf3j4uk" path="res://Scripts/UI/hud.gd" id="6_344ge"]
 [ext_resource type="Script" uid="uid://bcp84u1pgn0dd" path="res://Scripts/Classes/player.gd" id="7_6bp64"]
 
 [node name="Main" type="Node2D"]
@@ -25,7 +26,18 @@ visible = false
 
 [node name="MainMenu" parent="CanvasLayer" instance=ExtResource("5_kry3j")]
 
-[node name="ResourcesUI" parent="CanvasLayer" instance=ExtResource("6_21xkr")]
+[node name="HUD" type="Control" parent="CanvasLayer"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("6_344ge")
+
+[node name="ResourcesUI" parent="CanvasLayer/HUD" instance=ExtResource("6_21xkr")]
+layout_mode = 1
+offset_right = -40.0
+offset_bottom = -40.0
 
 [node name="Player" type="Node2D" parent="."]
 script = ExtResource("7_6bp64")

@@ -53,9 +53,8 @@ func gen_map(width : int, height : int) -> void:
 #	Gets the noise for map generation
 	var noise = _gen_noise(width, height)
 #	Looping over a 2-D Array
-	#resource_tile_manager.params(scale_vec)
-	Global.map_made.emit(scale_vec)
 	Global.tile_manager = resource_tile_manager
+	Global.map_made.emit(scale_vec)
 	await get_tree().process_frame
 	
 	var tiles_to_connect = []

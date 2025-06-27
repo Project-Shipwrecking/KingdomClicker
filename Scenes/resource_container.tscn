@@ -13,8 +13,9 @@ texture = ExtResource("1_6hyw0")
 expand_mode = 4
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
+custom_minimum_size = Vector2(0, 15)
 layout_mode = 2
 bbcode_enabled = true
-text = "[color=black][font_size=12]2"
-fit_content = true
+text = "[color=black][font_size=12]"
+scroll_active = false
 horizontal_alignment = 1

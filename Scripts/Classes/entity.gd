@@ -7,7 +7,8 @@ signal res_changed(res)
 var resources : Array[Resources] = [] :
 	set(value):
 		resources = value
-		res_changed.emit(value)
+		if self is Player:
+			self.res_changed.emit(value)
 
 var entities : Array[Troop] = []
 
