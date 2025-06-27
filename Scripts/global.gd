@@ -29,9 +29,7 @@ enum GAME_STATE {
 	GAME_OVER
 }
 
-var players = {
-	
-}
+var players = []
 
 var map = [[]]
 ## Signal to tell everything that the map has been generated.
