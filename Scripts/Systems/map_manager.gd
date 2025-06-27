@@ -96,6 +96,7 @@ func gen_map(width : int, height : int) -> void:
 	#RIP Tile edges LOLLLL cri
 
 
+
 ## 1D Gaussian
 func _gaussian(dist: float, sig: float) -> float:
 	return exp(-pow(dist, 2) / 2 * pow(sig, 2))

@@ -13,6 +13,7 @@ var holding : Object
 #var building : Building = null
 ## Stores who owns the land
 var territory_owned_by : Entity = null
+var selected : bool = false
 
 #func assign_random_resource():
 	#var resource_types = [Global.RESOURCE_WOOD, Global.RESOURCE_STONE, Global.RESOURCE_FOOD]
