@@ -42,10 +42,15 @@ func expand():
 		var total_list = possible_tiles + contested_tiles
 		if total_list.size() == 0:
 			continue
-		#var move_tile = total_list[randi() % total_list.size()]
+		# Expansion is randomized
+		var move_tile = total_list[randi() % total_list.size()]
+		
+		# Combat system
+		#TODO give player chance to skip soldier
 		#if move_tile in contested_tiles:
 			#for part in players:
 				#if move_tile in part.possessed_land:
+					## Assuming troops are spread evenly
 					#var soldiers_per_tile_enemy = len(part.entities['SOLDIERS']) / len(part.possessed_land) # update logic later
 					#var soldiers_per_tile_self = len(entities['SOLDIERS']) / len(possessed_land) # update logic later
 					#if soldiers_per_tile_self > soldiers_per_tile_enemy:
