@@ -53,6 +53,7 @@ func open() -> void:
 
 func _on_resume_button_pressed() -> void:
 	Global.game_state = Global.GAME_STATE.GAME
+	
 	close()
 
 func _on_quit_button_pressed() -> void:

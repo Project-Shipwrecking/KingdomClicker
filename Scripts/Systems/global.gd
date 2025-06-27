@@ -36,6 +36,8 @@ var players = {
 var map = [[]]
 ## Signal to tell everything that the map has been generated.
 signal map_made(size:Vector2i, tilemap:TileMapLayer)
-
+var tile_manager : TileManager
 func game_loop():
 	pass
+
+var can_you_access_this = false

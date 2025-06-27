@@ -11,6 +11,7 @@ func _ready():
 	#main_menu.show()
 	#pause_menu.hide()
 	Global.game_state = Global.GAME_STATE.MAIN_MENU
+	print("I can acces thiss, watch %s" % Global.can_you_access_this)
 
 func _unhandled_input(event: InputEvent) -> void:
 	match Global.game_state:
