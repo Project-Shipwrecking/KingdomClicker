@@ -8,9 +8,9 @@ func _process(delta_time : float):
 	match Global.game_state:
 		
 		Global.GAME_STATE.GAME:
-			if Input.is_action_just_pressed("middle_click"):
+			if Input.is_action_just_pressed("middle_click") or Input.is_action_just_pressed("right_click"):
 				drag_start_pos = get_global_mouse_position()
-			elif Input.is_action_pressed("middle_click"):
+			elif Input.is_action_pressed("middle_click") or Input.is_action_pressed("right_click"):
 				position = position.lerp(position - (get_global_mouse_position() - drag_start_pos), CAMERA_MOVE_SPEED*delta_time)
 			elif Input.is_action_just_pressed("scroll_down"):
 				_zoom_update(1 / CAMERA_ZOOM_MULTI)

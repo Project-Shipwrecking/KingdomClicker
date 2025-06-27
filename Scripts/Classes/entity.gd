@@ -2,7 +2,12 @@
 ## [br]
 class_name Entity extends Node2D
 
-var resources : Array[Resources] = []
+signal res_changed(res)
+
+var resources : Array[Resources] = [] :
+	set(value):
+		resources = value
+		res_changed.emit(value)
 
 var entities : Array[Troop] = []
 
@@ -72,12 +77,10 @@ func expand():
 
 func _ready() -> void:
 	_resource_fill()
-	Global.map_made.connect(update_internal_map)
+	update_internal_map()
 	
-func update_internal_map(_size, tilemap:TileMapLayer):
-	#map_gen = tilemap.
-	#TODO Mapgen needs work...
-	tile_man = tilemap as TileManager
+func update_internal_map():
+	tile_man = Global.tile_manager
 
 ## Init function for filling inventory
 func _resource_fill():

@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://cfu5ba85pl6bq"]
+
+[ext_resource type="Texture2D" uid="uid://ocqr4kaowgws" path="res://Assets/icon.svg" id="1_6hyw0"]
+[ext_resource type="Script" uid="uid://biwhq7onp6i07" path="res://Scripts/UI/resource_container.gd" id="1_g0bus"]
+
+[node name="ResourceContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(40, 0)
+script = ExtResource("1_g0bus")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 2
+texture = ExtResource("1_6hyw0")
+expand_mode = 4
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 2
+bbcode_enabled = true
+text = "[color=black][font_size=12]2"
+fit_content = true
+horizontal_alignment = 1

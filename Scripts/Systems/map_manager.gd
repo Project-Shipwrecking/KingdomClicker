@@ -24,7 +24,7 @@ var schema_example = {
 
 func _ready():
 	# Renders the map
-	gen_map(50,50)
+	gen_map(100,100)
 	#TODO Have the main scene initialize this.
 
 func _process(_delta: float):
@@ -54,7 +54,9 @@ func gen_map(width : int, height : int) -> void:
 	var noise = _gen_noise(width, height)
 #	Looping over a 2-D Array
 	#resource_tile_manager.params(scale_vec)
-	Global.map_made.emit(scale_vec, resource_tile_manager)
+	Global.map_made.emit(scale_vec)
+	Global.tile_manager = resource_tile_manager
+	await get_tree().process_frame
 	
 	var tiles_to_connect = []
 

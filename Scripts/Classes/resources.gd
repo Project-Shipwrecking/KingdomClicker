@@ -6,6 +6,10 @@ class_name Resources extends Resource
 @export var probability : float = 1 
 @export var tileset_id : int = 0
 @export var atlas_coord : Vector2i 
+var texture : Texture2D :
+	get():
+		Global.tile_manager
+		return
 var type_id : int = -1
 
 func _init(given_type_id:int, given_name:String = "", given_atlas_coord:Vector2i = Vector2i(-1, -1), given_probability:float=1, given_tileset_id:int = 0) -> void:
