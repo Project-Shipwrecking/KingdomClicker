@@ -54,8 +54,8 @@ func gen_map(width : int, height : int) -> void:
 	var noise = _gen_noise(width, height)
 #	Looping over a 2-D Array
 	#resource_tile_manager.params(scale_vec)
-	Global.map_made.emit(scale_vec, resource_tile_manager)
-	Global.tile_manager = self
+	Global.tile_manager = resource_tile_manager
+	Global.map_made.emit(scale_vec)
 	
 	var tiles_to_connect = []
 

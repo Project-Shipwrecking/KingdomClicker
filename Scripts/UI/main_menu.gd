@@ -31,7 +31,6 @@ func close() -> void:
 
 
 func _on_start_button_pressed() -> void:
-	print_debug("started")
 	Global.game_state = Global.GAME_STATE.GAME
 	close()
 

@@ -67,12 +67,10 @@ func expand():
 
 func _ready() -> void:
 	_resource_fill()
-	Global.map_made.connect(update_internal_map)
+	update_internal_map()
 	
-func update_internal_map(_size, tilemap:TileMapLayer):
-	#map_gen = tilemap.
-	#TODO Mapgen needs work...
-	tile_man = tilemap as TileManager
+func update_internal_map():
+	tile_man = Global.tile_manager
 
 ## Init function for filling inventory
 func _resource_fill():
@@ -138,11 +136,8 @@ func add_building(building_name, location: Vector2):
 	var tile = tile_man.get_tile_datum(location)
 	if tile.holding is Building: return # If already holding building, fail
 	
-	var build = Building.new()
+	var build = Building.new(building_name, location)
 	build.owned_by = self
-	build.type = building_name
-	build.name = building_name
-	build.location = location
 	
 	if build.check_requirements(location, resources, building_name): 
 		# should be check reqs from building class

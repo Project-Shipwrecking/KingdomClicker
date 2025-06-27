@@ -5,10 +5,9 @@ var tile_data : Array[Array]
 
 func _ready():
 	Global.map_made.connect(params)
-	Global.get_tile_datum.connect(get_tile_datum)
 
 ## Used to init tile_data
-func params(vec:Vector2i, _tile:TileMapLayer):
+func params(vec:Vector2i):
 	for x in range(vec.x):
 		tile_data.append([])
 		for y in range(vec.y):

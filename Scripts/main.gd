@@ -11,17 +11,16 @@ func _ready():
 	#main_menu.show()
 	#pause_menu.hide()
 	Global.game_state = Global.GAME_STATE.MAIN_MENU
-	print("I can acces thiss, watch %s" % Global.can_you_access_this)
 
 func _unhandled_input(event: InputEvent) -> void:
 	match Global.game_state:
 		Global.GAME_STATE.GAME:
 			if event.is_action_pressed("quit"):
-				pause_menu.open() 
+				pause_menu.open()
 				Global.game_state = Global.GAME_STATE.PAUSE
 		Global.GAME_STATE.PAUSE:
 			if event.is_action_pressed("quit"):
-				pause_menu.close() 
+				pause_menu.close()
 				Global.game_state = Global.GAME_STATE.GAME
 		Global.GAME_STATE.MAIN_MENU:
 			pass

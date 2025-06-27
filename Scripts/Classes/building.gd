@@ -5,14 +5,15 @@ static var buildings = {
 	
 }
 ## By default is -1, and increased once added to inventory.
-var amount = -1
-var id = -1
 var owned_by : Entity
 var location : Vector2i
 var type : String : 
 	set(value):
 		type = value
 		#TODO add functions to initialze stats for the building like health and stuff
+
+func _init(given_name:String, loc:Vector2i):
+	type = given_name
 
 func add_building_data(building_id,
 					building_name,
