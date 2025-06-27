@@ -5,7 +5,6 @@ class_name TileDatum extends Node
 
 
 var tile_type : int = 0 # Default to SEA, uses Global.TILE_TYPE enum
-var tile_contents = null
 var biome : BiomeManager.BiomeName
 ## Whatever the tile actually holds
 var holding : Object

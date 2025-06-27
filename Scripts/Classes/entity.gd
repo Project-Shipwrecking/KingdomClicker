@@ -31,7 +31,7 @@ func expand():
 		var y = tile.y
 		var surrounding_tiles = tile_man.get_surrounding_cells(tile)
 		for surr_tile in surrounding_tiles:
-			var data = tile_man.get_tile_datum(surr_tile)
+			var data : TileDatum = tile_man.get_tile_datum(surr_tile)
 			if data.territory_owned_by == null:
 				possible_tiles.append(data)
 			elif data.territory_owned_by == self:

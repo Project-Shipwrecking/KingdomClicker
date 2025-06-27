@@ -31,6 +31,7 @@ func erase_coords(coords:Vector2):
 func get_tile_datum(coords:Vector2i) -> TileDatum:
 	coords = coords.clamp(Vector2i(0,0), Vector2i(len(tile_data)-1, len(tile_data[0])-1))
 	return tile_data[coords.x][coords.y]
+	
 ## Spits out a string version of the data in the tile
 func read_tile_datum(coords:Vector2i) -> String:
 	var tile : TileDatum = get_tile_datum(coords)

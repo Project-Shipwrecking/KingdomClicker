@@ -1,11 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://dhan6hfycmk67"]
+[gd_scene load_steps=6 format=3 uid="uid://dhan6hfycmk67"]
 
 [ext_resource type="Script" uid="uid://dusjgdyy7xnv0" path="res://Scripts/UI/camera.gd" id="1_jjgbg"]
 [ext_resource type="Script" uid="uid://d1o1ys4sv5c5h" path="res://Scripts/main.gd" id="1_jjvhh"]
 [ext_resource type="PackedScene" uid="uid://dhd21pir7fbsh" path="res://Scenes/map_manager.tscn" id="3_kry3j"]
 [ext_resource type="PackedScene" uid="uid://dagq5n6bqn3fv" path="res://Scenes/pause_menu.tscn" id="4_jjvhh"]
 [ext_resource type="PackedScene" uid="uid://bjikkp21uyvjf" path="res://Scenes/main_menu.tscn" id="5_kry3j"]
-[ext_resource type="PackedScene" uid="uid://brn0ak5w6cu0o" path="res://Scenes/resources_ui.tscn" id="6_21xkr"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_jjvhh")
@@ -21,16 +20,6 @@ script = ExtResource("1_jjgbg")
 
 [node name="PauseMenu" parent="CanvasLayer" instance=ExtResource("4_jjvhh")]
 visible = false
+mouse_filter = 1
 
 [node name="MainMenu" parent="CanvasLayer" instance=ExtResource("5_kry3j")]
-
-[node name="HUD" type="Control" parent="CanvasLayer"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="ResourcesUI" parent="CanvasLayer/HUD" instance=ExtResource("6_21xkr")]
-layout_mode = 1
-offset_right = -40.0
-offset_bottom = -40.0
