@@ -1,4 +1,5 @@
-class_name TileManager extends TileMapLayer
+class_name TileManager 
+extends TileMapLayer
 
 @onready var map_tile := $"../MapTile" as TileMapLayer
 var tile_data : Array[Array]
@@ -31,11 +32,16 @@ func erase_coords(coords:Vector2):
 func get_tile_datum(coords:Vector2i) -> TileDatum:
 	coords = coords.clamp(Vector2i(0,0), Vector2i(len(tile_data)-1, len(tile_data[0])-1))
 	return tile_data[coords.x][coords.y]
+
 ## Spits out a string version of the data in the tile
+
 func read_tile_datum(coords:Vector2i) -> String:
 	var tile : TileDatum = get_tile_datum(coords)
 	var out = ""
-	if tile.biome != null: out += "Biome: %s\n" % tile.biome
+	if tile.biome != null:
+		var biome_name = BiomeManager.BiomeName.keys()[tile.biome]
+		biome_name = biome_name.to_lower().capitalize()
+		out += "Biome: %s\n" % biome_name
 	if tile.holding is Resources: 
 		var res = tile.holding as Resources
 		out += "Resource: %s\n" % res.name
