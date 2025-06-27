@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://dhd21pir7fbsh"]
 
-[ext_resource type="Script" uid="uid://bjq6l2c8ly6ub" path="res://Scripts/map_manager.gd" id="1_6rskp"]
+[ext_resource type="Script" uid="uid://bjq6l2c8ly6ub" path="res://Scripts/Systems/map_manager.gd" id="1_6rskp"]
 [ext_resource type="TileSet" uid="uid://cdbvvkd0gkdsr" path="res://Assets/tile_sheet.tres" id="2_y5xe8"]
-[ext_resource type="Script" path="res://Scripts/tile_manager.gd" id="3_te1fr"]
+[ext_resource type="Script" uid="uid://b6ren3fmww14r" path="res://Scripts/Systems/tile_manager.gd" id="3_te1fr"]
 [ext_resource type="Theme" uid="uid://6shp5ck1tnja" path="res://Assets/FlatUI4/kenneyUI.tres" id="4_te1fr"]
 
 [node name="MapManager" type="Node2D" node_paths=PackedStringArray("map_tile")]

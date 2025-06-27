@@ -2,7 +2,7 @@
 
 [ext_resource type="Theme" uid="uid://6shp5ck1tnja" path="res://Assets/FlatUI4/kenneyUI.tres" id="1_yuoa8"]
 [ext_resource type="Texture2D" uid="uid://2sortuxm24ud" path="res://Assets/UI Pack/PNG/Grey/Default/button_square_flat.png" id="2_7mg63"]
-[ext_resource type="Script" uid="uid://ckot0xb6nj0y7" path="res://Scripts/resources_ui.gd" id="2_iuxoj"]
+[ext_resource type="Script" uid="uid://ckot0xb6nj0y7" path="res://Scripts/UI/resources_ui.gd" id="2_iuxoj"]
 [ext_resource type="Texture2D" uid="uid://ocqr4kaowgws" path="res://Assets/icon.svg" id="3_iuxoj"]
 
 [node name="ResourcesUI" type="Control"]
@@ -15,6 +15,7 @@ offset_bottom = -486.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(2, 2)
+mouse_filter = 2
 theme = ExtResource("1_yuoa8")
 script = ExtResource("2_iuxoj")
 
