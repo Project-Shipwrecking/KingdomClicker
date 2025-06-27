@@ -7,6 +7,13 @@ var tile_data : Array[Array]
 func _ready():
 	Global.map_made.connect(params)
 
+func is_in_bounds(coords:Vector2i) -> bool:
+	if coords.x < 0 or coords.x >= len(tile_data):
+		return false
+	elif coords.y < 0 or coords.y >= len(tile_data[0]):
+		return false
+	return true
+
 ## Used to init tile_data
 func params(vec:Vector2i):
 	for x in range(vec.x):
@@ -31,7 +38,10 @@ func erase_coords(coords:Vector2):
 ## Returns the TileDatum object placed in the resource_tile at coords and null if there is nothing.
 func get_tile_datum(coords:Vector2i) -> TileDatum:
 	coords = coords.clamp(Vector2i(0,0), Vector2i(len(tile_data)-1, len(tile_data[0])-1))
-	return tile_data[coords.x][coords.y]
+	var tile = tile_data[coords.x][coords.y]
+	if tile != null:
+		return tile_data[coords.x][coords.y]
+	return TileDatum.new()
 
 ## Spits out a string version of the data in the tile
 
