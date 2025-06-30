@@ -8,6 +8,9 @@ var time_since_expand: float = 0.0
 func _ready() -> void:
 	super()
 	self.res_changed.connect(on_res_or_troop_changed)
+	if not is_instance_valid(hud):
+		hud = HUD.new()
+		add_child(hud)
 	
 func _process(delta:float):
 	if Global.game_state == Global.GAME_STATE.GAME:
@@ -30,14 +33,11 @@ func on_res_or_troop_changed(_res_list):
 var start_select_pos: Vector2i = Vector2i(-1, -1)
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not Global.is_ready:
+	if not Global.is_ready or Global.game_state != Global.GAME_STATE.GAME:
 		return
 
-	if Global.game_state != Global.GAME_STATE.GAME:
-		return
-	
-	if not is_instance_valid(Global.selection_layer): return
-	var mouse_pos = Global.selection_layer.local_to_map(get_local_mouse_position())
+	if not is_instance_valid(Global.tile_manager): return
+	var mouse_pos = Global.tile_manager.local_to_map(get_local_mouse_position())
 	
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.is_pressed():
@@ -50,11 +50,19 @@ func _unhandled_input(event: InputEvent) -> void:
 				if tile_datum.territory_owned_by == self:
 					if tile_datum.resource_on_tile and tile_datum.resource_amount > 0 and not tile_datum.building_on_tile:
 						var res_on_tile = tile_datum.resource_on_tile
-						var inv_res = _find_res(res_on_tile.name, resources)
+						# --- CORE FIX ---
+						# Use the 'yields' property to find the correct inventory resource
+						var inventory_res_name = res_on_tile.yields
+						var inv_res = _find_res(inventory_res_name, resources)
+						
 						if inv_res:
 							inv_res.amount += 1
 							tile_datum.resource_amount -= 1
-							self.resources = self.resources.duplicate()
+							# Reassign to trigger the setter and update UI
+							self.resources = self.resources
+						else:
+							print("Could not find resource '%s' in player inventory." % inventory_res_name)
+					
 					elif tile_datum.building_on_tile:
 						Global.selected_building = tile_datum.building_on_tile
 					else:
@@ -77,8 +85,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	if Input.is_key_pressed(KEY_7): add_building("wall", mouse_pos)
 
 func update_selection():
+	if not is_instance_valid(Global.selection_layer): return
 	var mouse = get_local_mouse_position()
-	var mouse_tile = Global.selection_layer.local_to_map(mouse)
+	var mouse_tile = Global.tile_manager.local_to_map(mouse)
 	if Global.tile_manager.is_in_bounds(mouse_tile):
 		if start_select_pos == Vector2i(-1, -1):
 			Global.selection_layer.select(mouse_tile)

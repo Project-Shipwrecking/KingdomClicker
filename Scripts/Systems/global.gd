@@ -17,11 +17,12 @@ var TILE_ID = {
 }
 
 signal game_state_changed(new_val, old_val)
-var game_state = 0 :
+var game_state = -1 : # Initialize to a non-state
 	set(val):
 		if val == game_state: return
-		game_state_changed.emit(val, game_state)
+		var old_val = game_state
 		game_state = val
+		game_state_changed.emit(val, old_val)
 
 enum GAME_STATE {
 	MAIN_MENU,
@@ -32,7 +33,11 @@ enum GAME_STATE {
 
 var players = []
 signal map_made(size:Vector2i)
+signal player_spawned(spawn_pos: Vector2i)
 signal game_over(winner_name)
+signal player_resources_updated(resources: Array[Resources])
+signal player_troops_updated(troops: Array[Troop])
+
 
 var tile_manager : TileManager
 var selection_layer: Selection
@@ -41,3 +46,4 @@ var selected_building: Building = null
 
 func _ready() -> void:
 	is_ready = true
+	game_state = GAME_STATE.MAIN_MENU

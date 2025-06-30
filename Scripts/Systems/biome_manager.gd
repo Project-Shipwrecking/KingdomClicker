@@ -12,18 +12,11 @@ enum BiomeName {
 var biomes : Array = [
 	{
 		'resource_scattering': .7,
-		#'sand': {
-			#'probability': 0.6,
-			#'atlas_coord': Vector2i(1, 0)
-			#},
-		#'salt': {
-			#'probability': 0.1,
-			#'atlas_coord': Vector2i(2, 0)
-		#},
 		'cactus': {
 			'probability': 0.1,
 			'tilesheet_id': 1,
-			'atlas_coord': Vector2i(4, 2)
+			'atlas_coord': Vector2i(4, 2),
+			'yields': 'wood' # Example: Cacti could yield wood
 		}
 	},
 	{
@@ -31,26 +24,26 @@ var biomes : Array = [
 		'tree1': {
 			'probability': 0.2,
 			'tilesheet_id': 1,
-			'atlas_coord': Vector2i(9, 2)
+			'atlas_coord': Vector2i(9, 2),
+			'yields': 'wood' # <-- MODIFIED
 		},
 		'tree2': {
 			'probability': 0.2,
 			'tilesheet_id': 1,
-			'atlas_coord': Vector2i(9, 3)
+			'atlas_coord': Vector2i(9, 3),
+			'yields': 'wood' # <-- MODIFIED
 		},
 		'tree3': {
 			'probability': 0.3,
 			'tilesheet_id': 1,
-			'atlas_coord': Vector2i(9, 7)
+			'atlas_coord': Vector2i(9, 7),
+			'yields': 'wood' # <-- MODIFIED
 		},
-		#'berries': {
-			#'probability': 0.1,
-			#'atlas_coord': Vector2i(10, 2)
-		#},
 		'stones': {
 			'probability': 0.2,
 			'tilesheet_id': 1,
-			'atlas_coord': Vector2i(8, 2)
+			'atlas_coord': Vector2i(8, 2),
+			'yields': 'stone' # <-- MODIFIED
 		}
 	},
 	{
@@ -58,16 +51,9 @@ var biomes : Array = [
 		'grass': {
 			'probability': 0.6,
 			'tilesheet_id': 1,
-			'atlas_coord': Vector2i(8, 3)
-		},
-		#'flowers': {
-			#'probability': 0.1,
-			#'atlas_coord': Vector2i(6, 2)
-		#},
-		#'wheat': {
-			#'probability': 0.1,
-			#'atlas_coord': Vector2i(6, 2)
-		#}
+			'atlas_coord': Vector2i(8, 3),
+			'yields': 'berries' # Example: Grass could yield berries
+		}
 	}
 ];
 
@@ -76,7 +62,7 @@ func get_resources_for_biome(biome_index: int) -> Array:
 	for res_name in biomes[biome_index].keys():
 		if res_name == "resource_scattering": continue
 		var res_data = biomes[biome_index][res_name]
-		var resToPush = Resources.new(-1, res_name, res_data.atlas_coord, res_data.probability, res_data.tilesheet_id)
+		var resToPush = Resources.new(-1, res_name, res_data.atlas_coord, res_data.probability, res_data.tilesheet_id, res_data.get("yields", res_name))
 		typed_resources.append(resToPush)
 		
 	return typed_resources
@@ -103,4 +89,3 @@ func pick_weighted_random_resource(resources: Array) -> Resources:
 			return res
 
 	return null # fallback (shouldn't happen if weights are valid)
-	

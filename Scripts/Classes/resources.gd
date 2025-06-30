@@ -2,13 +2,18 @@ class_name Resources extends Resource
 
 @export var name : String
 @export var probability : float = 1 
+@export var yields: String = "" # <-- ADDED: What resource this gives to the player
 @export var tileset_id : int = 0
 @export var atlas_coord : Vector2i 
 var amount : int = -1
 var texture : Texture2D :
 	get:
+		if not is_instance_valid(Global.tile_manager) or not Global.tile_manager.tile_set:
+			return null
 		var source = Global.tile_manager.tile_set.get_source(1)
 		source = source as TileSetAtlasSource
+		if not is_instance_valid(source) or not is_instance_valid(source.texture):
+			return null
 		var region = source.get_tile_texture_region(atlas_coord)
 		var image = source.texture.get_image()
 		image = image.get_region(region)
@@ -16,12 +21,14 @@ var texture : Texture2D :
 		return texture_final
 var type_id : int = -1
 
-func _init(given_type_id:int = -1, given_name:String = "", given_atlas_coord:Vector2i = Vector2i(-1, -1), given_probability:float=1, given_tileset_id:int = 0) -> void:
+func _init(given_type_id:int = -1, given_name:String = "", given_atlas_coord:Vector2i = Vector2i(-1, -1), given_probability:float=1, given_tileset_id:int = 0, given_yields:String = "") -> void:
 	self.name = given_name
 	self.type_id = given_type_id
 	self.atlas_coord = given_atlas_coord
 	self.probability = given_probability
 	self.tileset_id = given_tileset_id
+	self.yields = given_yields if not given_yields.is_empty() else given_name
+
 
 func _to_string() -> String:
 	return "%s" % name

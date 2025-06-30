@@ -1,9 +1,76 @@
-[gd_scene load_steps=5 format=3 uid="uid://dhd21pir7fbsh"]
+[gd_scene load_steps=6 format=3 uid="uid://dhd21pir7fbsh"]
 
 [ext_resource type="Script" uid="uid://bjq6l2c8ly6ub" path="res://Scripts/Systems/map_manager.gd" id="1_6rskp"]
 [ext_resource type="TileSet" uid="uid://cdbvvkd0gkdsr" path="res://Assets/tile_sheet.tres" id="2_y5xe8"]
 [ext_resource type="Script" uid="uid://b6ren3fmww14r" path="res://Scripts/Systems/tile_manager.gd" id="3_te1fr"]
 [ext_resource type="Theme" uid="uid://6shp5ck1tnja" path="res://Assets/FlatUI4/kenneyUI.tres" id="4_te1fr"]
+
+[sub_resource type="GDScript" id="GDScript_te1fr"]
+script/source = "class_name TerritoryOutlineDrawer extends Node2D
+
+var tile_manager: TileManager
+var tile_size: Vector2i
+
+# A thick, substantial border width by default.
+@export var border_thickness: float = 4.0 
+@export var player_border_color: Color = Color(0.2, 0.5, 1.0, 0.9)
+@export var enemy_border_color: Color = Color(1.0, 0.2, 0.2, 0.9)
+
+func _ready():
+	# Wait a frame to ensure all other nodes are ready
+	await get_tree().process_frame
+	
+	# Find the tile manager in the parent node
+	var parent = get_parent()
+	if is_instance_valid(parent):
+		tile_manager = parent.get_node_or_null(\"ResourceTile\") as TileManager
+	
+	if is_instance_valid(tile_manager) and is_instance_valid(tile_manager.tile_set):
+		tile_size = tile_manager.tile_set.tile_size
+	else:
+		printerr(\"TerritoryOutlineDrawer Error: Could not find TileManager or TileSet.\")
+		tile_size = Vector2i(16, 16) # Fallback size
+
+func _process(_delta):
+	# Redraw every frame to keep the outlines updated
+	queue_redraw()
+
+func _draw():
+	if not is_instance_valid(tile_manager):
+		return
+
+	for entity in get_tree().get_nodes_in_group(\"entities\"):
+		if not is_instance_valid(entity) or not \"possessed_land\" in entity or entity.possessed_land.is_empty():
+			continue
+
+		var territory_tiles = {}
+		for tile in entity.possessed_land:
+			territory_tiles[tile] = true
+
+		var outline_color: Color
+		if entity is Player:
+			outline_color = player_border_color
+		elif entity is Enemy:
+			outline_color = enemy_border_color
+		else:
+			continue
+
+		for tile_coord in territory_tiles.keys():
+			var tile_center = tile_manager.map_to_local(tile_coord)
+			var tile_origin = tile_center - Vector2(tile_size.x * 0.5, tile_size.y * 0.5)
+
+			if not territory_tiles.has(tile_coord + Vector2i.UP):
+				draw_rect(Rect2(tile_origin + Vector2(0, -border_thickness), Vector2(tile_size.x, border_thickness)), outline_color)
+
+			if not territory_tiles.has(tile_coord + Vector2i.DOWN):
+				draw_rect(Rect2(tile_origin + Vector2(0, tile_size.y), Vector2(tile_size.x, border_thickness)), outline_color)
+
+			if not territory_tiles.has(tile_coord + Vector2i.LEFT):
+				draw_rect(Rect2(tile_origin + Vector2(-border_thickness, 0), Vector2(border_thickness, tile_size.y)), outline_color)
+
+			if not territory_tiles.has(tile_coord + Vector2i.RIGHT):
+				draw_rect(Rect2(tile_origin + Vector2(tile_size.x, 0), Vector2(border_thickness, tile_size.y)), outline_color)
+"
 
 [node name="MapManager" type="Node2D"]
 script = ExtResource("1_6rskp")
@@ -36,3 +103,6 @@ offset_right = -10.0
 offset_bottom = -10.0
 bbcode_enabled = true
 text = "[color=black]asdfer"
+
+[node name="TerritoryOutlineDrawer" type="Node2D" parent="."]
+script = SubResource("GDScript_te1fr")

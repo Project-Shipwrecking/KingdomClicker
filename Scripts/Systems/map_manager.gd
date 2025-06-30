@@ -11,15 +11,13 @@ class_name MapManager extends Node2D
 
 var selection_layer: Selection
 var last_hovered_tile = null
+var map_generated = false
 
 @onready var biome_man = BiomeManager.new()
 @onready var scale_vec : Vector2
 
-var schema_example = {
-	'tiles': [[]],
-	'biome': [[]],
-	'resource': [[]]
-}
+func is_map_generated() -> bool:
+	return map_generated
 
 func _ready():
 	selection_layer = Selection.new()
@@ -27,14 +25,13 @@ func _ready():
 	selection_layer.tile_set = resource_tile_manager.tile_set
 	add_child(selection_layer)
 	Global.selection_layer = selection_layer
-	gen_map(100,100)
+	info_box.hide()
 
 func _process(_delta: float):
 	if Global.game_state == Global.GAME_STATE.GAME:
 		_read_tile_data_and_display()
 	else: 
 		info_box.hide()
-	pass
 
 func _read_tile_data_and_display():
 	var mouse_hover_tile : Vector2i = resource_tile_manager.local_to_map(get_local_mouse_position())
@@ -57,6 +54,9 @@ func _read_tile_data_and_display():
 	info_box.size.y = info_text.get_content_height()
 
 func gen_map(width : int, height : int) -> void:
+	if map_generated: return
+	map_generated = true
+	
 	var scale_vec = Vector2(width, height)
 	var noise = _gen_noise(width, height)
 	Global.tile_manager = resource_tile_manager
@@ -131,11 +131,10 @@ func _spawn_entities(land_tiles: Array):
 		var player_spawn = spawn_points.pop_front()
 		var player = Player.new()
 		player.name = "Player"
-		var hud = HUD.new()
-		player.add_child(hud)
 		add_child(player)
 		player.add_territory([player_spawn])
 		Global.players.append(player)
+		Global.player_spawned.emit(player_spawn)
 	else:
 		print("Critical: No valid spawn point found for the player!")
 		return

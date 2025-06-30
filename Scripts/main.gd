@@ -1,26 +1,28 @@
 extends Node2D
 
-@onready var pause_menu := $CanvasLayer/PauseMenu as Control # Adjust type if it has a class_name
-@onready var main_menu := $CanvasLayer/MainMenu as Control # Adjust type if it has a class_name
-
+@onready var pause_menu := $CanvasLayer/PauseMenu as Control
+@onready var main_menu := $CanvasLayer/MainMenu as Control
+@onready var map_manager := $MapManager as MapManager
 
 func _ready():
-	# res_c = MapResources.new() # Example initialization
-	# print(res_c._normalize_probabilities(res_c.taxanomy))
-	#await get_tree().process_frame
-	#main_menu.show()
-	#pause_menu.hide()
-	Global.game_state = Global.GAME_STATE.MAIN_MENU
+	main_menu.show()
+	pause_menu.hide()
+	Global.game_state_changed.connect(_on_game_state_changed)
+
+func _on_game_state_changed(new_state, _old_state):
+	match new_state:
+		Global.GAME_STATE.GAME:
+			main_menu.close()
+			if not map_manager.is_map_generated():
+				map_manager.gen_map(100, 100)
+		Global.GAME_STATE.PAUSE:
+			pause_menu.open()
+		Global.GAME_STATE.MAIN_MENU:
+			main_menu.open()
 
 func _unhandled_input(event: InputEvent) -> void:
-	match Global.game_state:
-		Global.GAME_STATE.GAME:
-			if event.is_action_pressed("quit"):
-				pause_menu.open() 
-				Global.game_state = Global.GAME_STATE.PAUSE
-		Global.GAME_STATE.PAUSE:
-			if event.is_action_pressed("quit"):
-				pause_menu.close() 
-				Global.game_state = Global.GAME_STATE.GAME
-		Global.GAME_STATE.MAIN_MENU:
-			pass
+	if event.is_action_pressed("quit"):
+		if Global.game_state == Global.GAME_STATE.GAME:
+			Global.game_state = Global.GAME_STATE.PAUSE
+		elif Global.game_state == Global.GAME_STATE.PAUSE:
+			Global.game_state = Global.GAME_STATE.GAME

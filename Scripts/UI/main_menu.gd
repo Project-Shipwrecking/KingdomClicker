@@ -8,13 +8,12 @@ class_name MainMenu extends Control
 
 
 func _ready() -> void:
-	show()
-	#start.grab_focus()
+	# The menu is shown by default from main.gd
+	pass
 
 
 func close() -> void:
 	var tween := create_tween()
-	get_tree().paused = false
 	tween.tween_property(
 		self,
 		^"modulate:a",
@@ -29,10 +28,14 @@ func close() -> void:
 	).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tween.tween_callback(hide)
 
+func open():
+	show()
+	modulate.a = 1.0
+	center_cont.anchor_bottom = 1.0
+
 
 func _on_start_button_pressed() -> void:
 	Global.game_state = Global.GAME_STATE.GAME
-	close()
 
 
 func _on_quit_button_pressed() -> void:

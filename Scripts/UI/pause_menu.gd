@@ -10,11 +10,11 @@ class_name PauseMenu extends Control
 
 func _ready() -> void:
 	hide()
+	process_mode = Node.PROCESS_MODE_WHEN_PAUSED
 
 
 func close() -> void:
-	var tween := create_tween()
-	get_tree().paused = false
+	var tween := create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	tween.tween_property(
 		self,
 		^"modulate:a",
@@ -27,16 +27,19 @@ func close() -> void:
 		0.5,
 		fade_out_duration
 	).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_callback(hide)
+	await tween.finished
+	hide()
+	get_tree().paused = false
 
 
 func open() -> void:
 	show()
-	#resume_button.grab_focus()
+	resume_button.grab_focus()
+	get_tree().paused = true
 
 	modulate.a = 0.0
 	center_cont.anchor_bottom = 0.5
-	var tween := create_tween()
+	var tween := create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	tween.tween_property(
 		self,
 		^"modulate:a",

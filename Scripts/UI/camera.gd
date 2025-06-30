@@ -34,8 +34,9 @@ func _zoom_update(mult: float) -> void:
 	zoom = Vector2(zoom_index, zoom_index)
 	
 func _ready() -> void:
-	Global.map_made.connect(center_on_map)
+	Global.player_spawned.connect(center_on_map)
 
-func center_on_map(size:Vector2i):
-	var center = Global.tile_manager.map_to_local(size)/2
-	position = center
+func center_on_map(spawn_pos:Vector2i):
+	if is_instance_valid(Global.tile_manager):
+		var center = Global.tile_manager.map_to_local(spawn_pos)
+		position = center
