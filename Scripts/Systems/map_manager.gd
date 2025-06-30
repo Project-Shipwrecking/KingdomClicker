@@ -1,20 +1,19 @@
 class_name MapManager extends Node2D
 
-@export_range(1, 10) var sigma : float = 3.5 # smaller sigma means bigger island
+@export_range(1, 10) var sigma : float = 3.5
+@export_range(1, 10) var number_of_enemies: int = 3
 @onready var map_tile := $MapTile as TileMapLayer
 @onready var resource_tile_manager := $ResourceTile as TileManager
 
-# UI Labels
 @onready var canvas_layer := $CanvasLayer as CanvasLayer
 @onready var info_box := $CanvasLayer/InfoBox as Panel
 @onready var info_text := info_box.get_node(^"Info") as RichTextLabel
 
+var selection_layer: Selection
 var last_hovered_tile = null
 
 @onready var biome_man = BiomeManager.new()
 @onready var scale_vec : Vector2
-
-# 3 layers: layer 1 is tile layer, 2 is biome, and 3 is resource
 
 var schema_example = {
 	'tiles': [[]],
@@ -23,12 +22,14 @@ var schema_example = {
 }
 
 func _ready():
-	# Renders the map
+	selection_layer = Selection.new()
+	selection_layer.name = "SelectionLayer"
+	selection_layer.tile_set = resource_tile_manager.tile_set
+	add_child(selection_layer)
+	Global.selection_layer = selection_layer
 	gen_map(100,100)
-	#TODO Have the main scene initialize this.
 
 func _process(_delta: float):
-	#_get_biome_on_hover()
 	if Global.game_state == Global.GAME_STATE.GAME:
 		_read_tile_data_and_display()
 	else: 
@@ -37,6 +38,11 @@ func _process(_delta: float):
 
 func _read_tile_data_and_display():
 	var mouse_hover_tile : Vector2i = resource_tile_manager.local_to_map(get_local_mouse_position())
+	
+	if not resource_tile_manager.is_in_bounds(mouse_hover_tile):
+		info_box.hide()
+		return
+		
 	var tile_data : TileDatum = resource_tile_manager.get_tile_datum(mouse_hover_tile)
 	if tile_data == null: 
 		info_box.hide()
@@ -44,31 +50,29 @@ func _read_tile_data_and_display():
 	info_box.show()
 	info_box.set_position(get_viewport().get_mouse_position() + Vector2(20,0), true)
 	info_text.clear()
-	info_text.append_text("[color=black]" + resource_tile_manager.read_tile_datum(mouse_hover_tile))
+	
+	var text_to_display = resource_tile_manager.read_tile_datum(mouse_hover_tile)
+	
+	info_text.append_text("[color=black]" + text_to_display)
 	info_box.size.y = info_text.get_content_height()
 
 func gen_map(width : int, height : int) -> void:
-#	Unit Vector Stuff (Honestly I still don't understand
 	var scale_vec = Vector2(width, height)
-#	Gets the noise for map generation
 	var noise = _gen_noise(width, height)
-#	Looping over a 2-D Array
 	Global.tile_manager = resource_tile_manager
 	Global.map_made.emit(scale_vec)
 	await get_tree().process_frame
 	
-	var tiles_to_connect = []
-
+	var land_tiles = []
 	for x in range(width):
 		for y in range(height):
-			# Gaussian part
 			var dist = (Vector2(x,y)/scale_vec).distance_to(Vector2(.5,.5))
 			var gauss_noise = _gaussian(dist, sigma) * (1 + noise.get_noise_3d(x, y, -100)/4)
 			if gauss_noise < 0.4: 
 				map_tile.set_cell(Vector2i(x,y), 1, Global.TILE_ID["SEA"])
-				continue # Skips everything else if sea
+				continue
 			
-			# Biome layer begins here, once its decided that its land.
+			land_tiles.append(Vector2i(x, y))
 			var biome_noise = noise.get_noise_3d(x, y, 100) 
 			var biome_type : BiomeManager.BiomeName
 			var biome_atlas : Vector2i
@@ -82,35 +86,79 @@ func gen_map(width : int, height : int) -> void:
 				biome_type = BiomeManager.BiomeName.PLAINS
 				biome_atlas = Global.TILE_ID["PLAINS"]
 			
-			# Once biome is picked, sets the land tile accordingly.
 			map_tile.set_cell(Vector2i(x,y), 1, biome_atlas) 
 			
-			# Resource layer starts here
 			if randf() < biome_man.biomes[biome_type]["resource_scattering"]: 
 				resource_tile_manager.set_cell_resource_and_biome(Vector2i(x,y), biome_type, biome_atlas)
-				continue # Sets the biome without resources
+				continue
 			var resource_to_spawn = biome_man.spawn_resource_in_biome(biome_type)
-			resource_tile_manager.set_cell_resource_and_biome(Vector2i(x,y), biome_type, biome_atlas, resource_to_spawn)
+			
+			if resource_to_spawn:
+				var new_res_instance = resource_to_spawn.duplicate()
+				resource_tile_manager.set_cell_resource_and_biome(Vector2i(x,y), biome_type, biome_atlas, new_res_instance)
 	
-	#map_tile.set_cells_terrain_connect(tiles_to_connect, 0, 0, false)
-	#RIP Tile edges LOLLLL cri
+	_spawn_entities(land_tiles)
 
+func _spawn_entities(land_tiles: Array):
+	if land_tiles.is_empty():
+		print("Error: No land tiles available to spawn entities.")
+		return
+	
+	land_tiles.shuffle()
+	
+	var min_spawn_distance = 15
+	var spawn_points = []
+	
+	var total_entities_to_spawn = 1+ number_of_enemies
+	
+	for potential_spawn_point in land_tiles:
+		if spawn_points.size() == total_entities_to_spawn:
+			break
+		
+		var is_valid = true
+		for existing_point in spawn_points:
+			if potential_spawn_point.distance_to(existing_point) < min_spawn_distance:
+				is_valid = false
+				break
+		
+		if is_valid:
+			spawn_points.append(potential_spawn_point)
+	
+	if spawn_points.size() < total_entities_to_spawn:
+		print("Warning: Could not find enough spaced-out spawn points")
+	
+	if not spawn_points.is_empty():
+		var player_spawn = spawn_points.pop_front()
+		var player = Player.new()
+		player.name = "Player"
+		var hud = HUD.new()
+		player.add_child(hud)
+		add_child(player)
+		player.add_territory([player_spawn])
+		Global.players.append(player)
+	else:
+		print("Critical: No valid spawn point found for the player!")
+		return
+	
+	var enemy_color_idx = 0
+	for enemy_spawn_point in spawn_points:
+		var enemy = Enemy.new()
+		enemy.name = "Enemy " + str(enemy_color_idx + 1)
+		enemy.territory_color_index = enemy_color_idx
+		add_child(enemy)
+		enemy.add_territory([enemy_spawn_point])
+		Global.players.append(enemy)
+		enemy_color_idx += 1
 
-
-## 1D Gaussian
 func _gaussian(dist: float, sig: float) -> float:
-	return exp(-pow(dist, 2) / 2 * pow(sig, 2))
+	return exp(-pow(dist, 2) / (2.0 * pow(sig, 2)))
 
 func _gen_noise(width: float, height: float) -> FastNoiseLite:
 	var noise = FastNoiseLite.new()
-#	Sets the seed as a random int
 	noise.seed = randi()
 	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 	noise.fractal_type = FastNoiseLite.FRACTAL_NONE
 	noise.fractal_octaves = 3
 	noise.frequency = 0.08
-#	Centers the noise at the center of the map
 	noise.offset = Vector3(width/2, height/2, 0)
-	#noise.fractal_gain
-	#noise.fractal_lacunarity
 	return noise

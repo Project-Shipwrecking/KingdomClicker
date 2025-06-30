@@ -1,5 +1,6 @@
-class_name global
 extends Node
+
+var is_ready: bool = false
 
 @onready var screen_size : Vector2 = get_viewport().get_visible_rect().size
 enum TILE_TYPE {
@@ -13,9 +14,8 @@ var TILE_ID = {
 	"DESERT": Vector2i(1,1),
 	"FOREST": Vector2i(6,1),
 	"PLAINS": Vector2i(6,5),
-} # Made to match the MapTile tileset
+}
 
-# Game State
 signal game_state_changed(new_val, old_val)
 var game_state = 0 :
 	set(val):
@@ -31,11 +31,13 @@ enum GAME_STATE {
 }
 
 var players = []
-
-var map = [[]]
-## Signal to tell everything that the map has been generated.
 signal map_made(size:Vector2i)
-var tile_manager : TileManager
+signal game_over(winner_name)
 
-func game_loop():
-	pass
+var tile_manager : TileManager
+var selection_layer: Selection
+
+var selected_building: Building = null
+
+func _ready() -> void:
+	is_ready = true

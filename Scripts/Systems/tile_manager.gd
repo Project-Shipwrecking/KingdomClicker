@@ -2,57 +2,72 @@ class_name TileManager
 extends TileMapLayer
 
 @onready var map_tile := $"../MapTile" as TileMapLayer
-var tile_data : Array[Array]
+var tile_data: Array[Array]
 
 func _ready():
 	Global.map_made.connect(params)
 
-func is_in_bounds(coords:Vector2i) -> bool:
-	if coords.x < 0 or coords.x >= len(tile_data):
+func is_in_bounds(coords: Vector2i) -> bool:
+	if coords.x < 0 or coords.x >= tile_data.size():
 		return false
-	elif coords.y < 0 or coords.y >= len(tile_data[0]):
+	if coords.y < 0 or coords.y >= tile_data[0].size():
 		return false
 	return true
 
-## Used to init tile_data
+func get_neighboring_cells(coords: Vector2i) -> Array:
+	var neighbors = []
+	var directions = [
+		Vector2i(0, 1), Vector2i(0, -1), Vector2i(1, 0), Vector2i(-1, 0),
+		Vector2i(1, 1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(-1, -1)
+	]
+	for dir in directions:
+		var neighbor_pos = coords + dir
+		if is_in_bounds(neighbor_pos):
+			neighbors.append(neighbor_pos)
+	return neighbors
+
 func params(vec:Vector2i):
 	for x in range(vec.x):
 		tile_data.append([])
 		for y in range(vec.y):
-			tile_data[x].append(null)
+			tile_data[x].append(TileDatum.new())
 
-## Uses given parameters to add textures to the resource_tile but also add tiledata to an internal 2d array.
 func set_cell_resource_and_biome(coords:Vector2i, biome_type:BiomeManager.BiomeName, biome_atlas:Vector2i, res:Resources = null):
-	var tile_datum = TileDatum.new()
+	var tile_datum = get_tile_datum(coords)
 	tile_datum.biome = biome_type
-	if res != null: 
+	
+	if res != null:
 		set_cell(coords, res.tileset_id, res.atlas_coord)
-		tile_datum.holding = res
-	tile_data[coords.x][coords.y] = tile_datum
+		tile_datum.resource_on_tile = res
+		tile_datum.resource_amount = randi_range(500, 1000)
 
-## Both erases the cell in the resource_tile and the info in the digitalized tile_data 2d array
-func erase_coords(coords:Vector2):
-	tile_data[coords.x][coords.y] = null
-	erase_cell(coords)
-
-## Returns the TileDatum object placed in the resource_tile at coords and null if there is nothing.
 func get_tile_datum(coords:Vector2i) -> TileDatum:
-	coords = coords.clamp(Vector2i(0,0), Vector2i(len(tile_data)-1, len(tile_data[0])-1))
-	var tile = tile_data[coords.x][coords.y]
-	if tile != null:
-		return tile_data[coords.x][coords.y]
-	return TileDatum.new()
-
-## Spits out a string version of the data in the tile
+	if not is_in_bounds(coords):
+		return null
+	return tile_data[coords.x][coords.y]
 
 func read_tile_datum(coords:Vector2i) -> String:
-	var tile : TileDatum = get_tile_datum(coords)
+	var tile: TileDatum = get_tile_datum(coords)
+	if not tile: return "Out of Bounds"
+	
 	var out = ""
-	if tile.biome != null:
-		var biome_name = BiomeManager.BiomeName.keys()[tile.biome]
-		biome_name = biome_name.to_lower().capitalize()
-		out += "Biome: %s\n" % biome_name
-	if tile.holding is Resources: 
-		var res = tile.holding as Resources
-		out += "Resource: %s\n" % res.name
+	var biome_name = BiomeManager.BiomeName.keys()[tile.biome]
+	biome_name = biome_name.to_lower().capitalize()
+	out += "Biome: %s\n" % biome_name
+	
+	if tile.building_on_tile:
+		var b = tile.building_on_tile
+		out += "Building: %s\n" % b.type
+		if is_instance_valid(b.owned_by):
+			out += "Owner: %s\n" % b.owned_by.name
+		out += "HP: %d / %d\n" % [b.health, b.max_health]
+	
+	if tile.resource_on_tile:
+		var r = tile.resource_on_tile
+		out += "Resource: %s\n" % r.name
+		out += "Amount: %d\n" % tile.resource_amount
+	
+	if tile.territory_owned_by:
+		out += "Territory of: %s" % tile.territory_owned_by.name
+	
 	return out

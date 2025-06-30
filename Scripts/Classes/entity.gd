@@ -1,179 +1,203 @@
-## Class to hold all of the expansion and inventory logic
-## [br]
 class_name Entity extends Node2D
 
 signal res_changed(res)
 
-var resources : Array[Resources] = [] :
+var territory_color_index: int = -1
+
+var resources: Array[Resources] = []:
 	set(value):
 		resources = value
 		if self is Player:
 			self.res_changed.emit(value)
 
-var troops : Array[Troop] = []
+var troops: Array[Troop] = []:
+	set(value):
+		troops = value
+		if self is Player:
+			self.res_changed.emit(value)
+			
+var possessed_land: Array[Vector2i] = []
+var is_expanding: bool = false
+var buildings: Array[Building] = []
 
-var buildings : Array[Building]= []
+var tile_man: TileManager
 
-## List of coordinates that are territory of this entity in Vector2i
-var possessed_land : Array[Vector2i] = [] # add coords here
+func _ready():
+	_resource_fill()
+	update_internal_map()
+	add_to_group("entities")
 
-# states of action
-var expanding = false
-var build_order = []
-var peace_treaties = []
-
-var players = []
-var tile_man : TileManager
-
-## Function with expansion logic every turn
-func expand():
+func _get_expansion_targets() -> Dictionary:
 	var expansion_targets: Dictionary = {}
-
 	var border_tiles: Dictionary = {}
 	for tile_coord in possessed_land:
-		var surrounding = tile_man.get_surrounding_cells(tile_coord)
+		var surrounding = tile_man.get_neighboring_cells(tile_coord)
 		for surr_coord in surrounding:
 			border_tiles[surr_coord] = true
-
+	
 	for border_coord in border_tiles.keys():
 		if border_coord in possessed_land:
 			continue
 		var tile_data = tile_man.get_tile_datum(border_coord)
-		expansion_targets[border_coord] = tile_data.territory_owned_by
+		if tile_data:
+			expansion_targets[border_coord] = tile_data.territory_owned_by
+	return expansion_targets
 
-	var new_territory_this_turn: Array[Vector2i] = []
+func _calculate_power() -> float:
+	var power = 0.0
+	for troop_instance in self.troops:
+		var troop_data = GlobalResources.TROOPS.get(troop_instance.name.to_lower())
+		if troop_data:
+			power += troop_instance.amount * troop_data.get("power", 1.0)
+	return power / max(1.0, float(self.possessed_land.size()))
 
-	for target_coord in expansion_targets.keys():
-		var defender = expansion_targets[target_coord]
+func _has_building_of_category(category: String) -> bool:
+	for b in buildings:
+		if BuildingTypes.buildings[b.type]["category"] == category:
+			return true
+	return false
 
-		if defender == null:
-			new_territory_this_turn.append(target_coord)
-		else:
-			var attacker_power = 0
-			for troop in self.troops:
-				attacker_power += troop.amount
+func _find_res(name: String, list: Array) -> Resource:
+	for obj in list:
+		if obj.name.to_lower() == name.to_lower():
+			return obj
+	return null
 
-			var defender_power = 0
-			for troop in defender.troops:
-				defender_power += troop.amount
-
-			var attacker_force_projection = float(attacker_power) / max(1, self.possessed_land.size())
-			var defender_force_projection = float(defender_power) / max(1, defender.possessed_land.size())
-
-			if attacker_force_projection > defender_force_projection:
-				new_territory_this_turn.append(target_coord)
-				# Troop loss logic would go here
-
-	if not new_territory_this_turn.is_empty():
-		self.add_territory(new_territory_this_turn)
-
-func _ready() -> void:
-	_resource_fill()
-	update_internal_map()
+func _resource_fill():
+	for res_name in GlobalResources.RESOURCES.keys():
+		var res = Resources.new()
+		res.name = res_name
+		res.amount = 100 if self is Player else 25
+		resources.append(res)
 	
+	for troop_name in GlobalResources.TROOPS.keys():
+		var troop = Troop.new()
+		troop.name = troop_name
+		if troop_name == "citizen":
+			troop.amount = 10 if self is Player else 15
+		else:
+			troop.amount = 0
+		troops.append(troop)
+	
+	self.resources = self.resources.duplicate()
+	self.troops = self.troops.duplicate()
+
 func update_internal_map():
 	tile_man = Global.tile_manager
 
-## Init function for filling inventory
-func _resource_fill():
-	for item in GlobalResources.RESOURCES:
-		# Initializes resource with 'type_id' of 'item'
-		var res = Resources.new(item)
-		resources.append(res)
-		#resources[item] = 0
-	for item in GlobalResources.TROOPS:
-		resources.append(Troop.new(item))
-		#entities[item] = 0
-
-## Returns the item in the inventory with the same name as passed through.
-func _find_res(name, list:Array) -> Object:
-	for obj in list:
-		if obj.name == name:
-			return obj
-	return null
-	#list.get_typed_class_name().new()
-	# Just realized that i need to access the id somehow using the name...
-
-## Assumes all Item and Resources are all in the inventory with amount 0
-## [br]
-## Also assumes items and resources are differentiated by their 'name' variable
-## [br]
-## Can be positive or negative
-func increment_resource_entity(resource_entity : Array[Resources], amounts:Array[int]):
-	for idx in range(min(resource_entity.size(), amounts.size())):
-		var res = resource_entity[idx]
-		var amount_of_res = amounts[idx]
-
-		if res is Troop:
-			var ent = _find_res(res.name, troops)
-			ent.amount = max(ent.amount + amount_of_res, 0)
-		elif res is Resources:
-			var ent = _find_res(res.name, resources)
-			ent.amount = max(ent.amount + amount_of_res, 0)
-		
-
-## Assumes all Item and Resources are all in the inventory with amount 0
-## [br]
-## Also assumes items and resources are differentiated by their 'name' variable
-## [br]
-## Amounts can only be positive, or it will clamp to 0
-func set_resource_entity(resource_entity : Array[Resources], amounts:Array[int]):
-	for idx in range(min(resource_entity.size(), amounts.size())):
-		var res = resource_entity[idx]
-		var amount_of_res = amounts[idx]
-
-		if res is Troop:
-			var ent = _find_res(res.name, troops)
-			ent.amount = max(amount_of_res, 0)
-		elif res is Resources:
-			var ent = _find_res(res.name, resources)
-			ent.amount = max(amount_of_res, 0)
-
-var building_list = {
-}
-
-## Works differently from troop or resources, there will be multiple of the same if you build it twice or more.
-func add_building(building_name, location: Vector2):
-	# Retrieve tile_datum and read it
-	var tile = tile_man.get_tile_datum(location)
-	if tile.holding is Building: return # If already holding building, fail
-	
-	var build = Building.new()
-	build.owned_by = self
-	build.type = building_name
-	build.name = building_name
-	build.location = location
-	
-	if build.check_requirements(location, resources, building_name): 
-		# should be check reqs from building class
-		
-		# Add the building to the TileDatum on the location
-		tile.holding = build
-		
-		# Takes resources required to build
-		for item in build['requirements']['resources']:
-			resources[item] -= build['requirements']['resources']['item']
-
-## Returns true if a building was destroyed and false if it doesn't.
-func destroy_building() -> bool:
-	return false
-
-func add_territory(tiles:Array[Vector2i]):
-	for tile:Vector2i in tiles:
+func add_territory(tiles: Array[Vector2i]):
+	for tile: Vector2i in tiles:
 		if tile not in possessed_land:
 			possessed_land.append(tile)
 			var tile_datum = tile_man.get_tile_datum(tile)
-			# if tile is owned, remove it from the other entity's possessed land
 			var prev_owner = tile_datum.territory_owned_by
-			if prev_owner != null:
-				prev_owner.remove_territory([tile])
+			if is_instance_valid(prev_owner):
+				var tile_to_remove_arr: Array[Vector2i] = []
+				tile_to_remove_arr.append(tile)
+				prev_owner.remove_territory(tile_to_remove_arr)
 			tile_datum.territory_owned_by = self
 
 func remove_territory(tiles:Array[Vector2i]):
-	for tile in possessed_land:
-		possessed_land.erase(tile)
-		var tile_datum = tile_man.get_tile_datum(tile)
-		tile_datum.territory_owned_by = null
+	var tiles_to_remove = tiles.duplicate()
+	for tile in tiles_to_remove:
+		if tile in possessed_land:
+			possessed_land.erase(tile)
+			var tile_datum = tile_man.get_tile_datum(tile)
+			if tile_datum:
+				if tile_datum.building_on_tile and tile_datum.building_on_tile.owned_by == self:
+					destroy_building(tile)
+				tile_datum.territory_owned_by = null
+	
+	if possessed_land.is_empty() and is_inside_tree():
+		print("%s has been defeated!" % self.name)
+		queue_free()
 
-func check_death():
-	return (len(possessed_land) <= 0)
+func process_buildings(delta:float):
+	for building in buildings:
+		building.process_realtime(delta)
+
+func process_entity(delta: float):
+	process_buildings(delta)
+
+func expand():
+	var expansion_targets = _get_expansion_targets()
+	var target_coords = expansion_targets.keys()
+	target_coords.shuffle()
+	
+	for target_coord in target_coords:
+		if randf() < 0.5:
+			continue
+		
+		var defender = expansion_targets[target_coord]
+		var attacker_power = _calculate_power()
+		
+		if not is_instance_valid(defender):
+			add_territory([target_coord])
+		else:
+			var defender_power = defender._calculate_power()
+			var tile_datum = tile_man.get_tile_datum(target_coord)
+			
+			if tile_datum.building_on_tile and tile_datum.building_on_tile.owned_by == defender:
+				defender_power += tile_datum.building_on_tile.health * 10
+			
+			if attacker_power > defender_power:
+				add_territory([target_coord])
+			else:
+				if tile_datum.building_on_tile and tile_datum.building_on_tile.owned_by == defender:
+					var building = tile_datum.building_on_tile
+					var damage = attacker_power / 5.0
+					if building.take_damage(damage):
+						defender.destroy_building(target_coord)
+
+func add_building(building_name: String, location: Vector2i):
+	var tile_datum = tile_man.get_tile_datum(location)
+	if tile_datum.building_on_tile:
+		return
+	
+	if BuildingTypes.check_requirements(self, tile_datum, building_name):
+		var build = Building.new()
+		build.owned_by = self
+		build.type = building_name
+		build.name = BuildingTypes.buildings[building_name]["name"]
+		build.location = location
+		
+		tile_datum.building_on_tile = build
+		buildings.append(build)
+		
+		var reqs = BuildingTypes.buildings[building_name]["requirements"]["resources"]
+		for item_name in reqs:
+			_find_res(item_name, resources).amount -= reqs[item_name]
+		
+		self.resources = self.resources.duplicate()
+
+func destroy_building(location: Vector2i):
+	var building_to_remove = null
+	for b in buildings:
+		if b.location == location:
+			building_to_remove = b
+			break
+	
+	if building_to_remove:
+		buildings.erase(building_to_remove)
+		var tile_datum = tile_man.get_tile_datum(location)
+		if tile_datum:
+			tile_datum.building_on_tile = null
+		print("%s's %s at %s was removed." % [name, building_to_remove.name, location])
+
+func _ai_try_build(building_id: String) -> bool:
+	for tile_coord in possessed_land:
+		var tile_datum = tile_man.get_tile_datum(tile_coord)
+		if not tile_datum.building_on_tile and BuildingTypes.check_requirements(self, tile_datum, building_id):
+			add_building(building_id, tile_coord)
+			return true
+	return false
+
+func _ai_process_build_logic():
+	if not _has_building_of_category("production"):
+		if _ai_try_build("lumber_mill"): return
+		if _ai_try_build("stone_quarry"): return
+	if not _has_building_of_category("refining"):
+		if _ai_try_build("smelter"): return
+		if _ai_try_build("blacksmith"): return
+	if not _has_building_of_category("military"):
+		if _ai_try_build("barracks"): return
